@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Management AI Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: engineering graph-sheet ground, drawing-sheet title block header, activity index on the left, one activity sheet on the right */
+:root{
+  --paper:#F1F3EE; --sheet:#FFFFFF; --ink:#18222F; --ink-2:#4B5767; --line:#D3D8CD; --grid:rgba(24,34,47,.055);
+  --saffron:#B85512; --saffron-soft:#F7E4D3; --teal:#14675F; --teal-soft:#DCEDE9; --on-accent:#FFFFFF;
+  --ok:#23774A; --ok-soft:#DDF0E4; --bad:#A8281F; --bad-soft:#F8DEDB;
+  --f-display:'Archivo', 'Arial Narrow', Arial, sans-serif;
+  --f-body:'Source Sans 3', 'Segoe UI', Roboto, Arial, sans-serif;
+  --f-mono:'JetBrains Mono', Consolas, 'Courier New', monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151A; --sheet:#171F26; --ink:#E4E8EB; --ink-2:#9AA6B1; --line:#2A3541; --grid:rgba(228,232,235,.035);
+  --saffron:#F0893C; --saffron-soft:#3A2516; --teal:#56B9AB; --teal-soft:#15302C; --on-accent:#10151A;
+  --ok:#62C98F; --ok-soft:#173324; --bad:#F08C83; --bad-soft:#3A1C1A; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#10151A; --sheet:#171F26; --ink:#E4E8EB; --ink-2:#9AA6B1; --line:#2A3541; --grid:rgba(228,232,235,.035);
+  --saffron:#F0893C; --saffron-soft:#3A2516; --teal:#56B9AB; --teal-soft:#15302C; --on-accent:#10151A;
+  --ok:#62C98F; --ok-soft:#173324; --bad:#F08C83; --bad-soft:#3A1C1A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.55;
+}
+.page{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+p{margin:0}
+a{color:var(--teal)}
+:focus-visible{outline:2.5px solid var(--saffron);outline-offset:2px}
+.lbl{display:block;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+
+/* Header */
+.hero{display:grid;gap:22px;margin-bottom:28px}
+.kicker{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+h1{font-size:clamp(2.6rem,7vw,4.8rem);font-weight:850;font-stretch:72%;text-transform:uppercase;letter-spacing:.005em;line-height:.95}
+h1 em{font-style:normal;color:var(--saffron)}
+.lede{max-width:64ch;font-size:1.08rem;color:var(--ink-2)}
+.titleblock{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.5px;background:var(--ink);border:2px solid var(--ink)}
+.tb{background:var(--sheet);padding:9px 14px 11px;min-width:0}
+.tb .v{font-family:var(--f-display);font-weight:700;font-size:1.05rem;font-stretch:90%}
+.tb select{width:100%;font:600 1rem var(--f-body);color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:3px;padding:5px 8px}
+.meter{height:6px;background:var(--line);margin-top:7px;border-radius:3px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok);transition:width .3s}
+
+/* Main layout */
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:24px;align-items:start}
+.index{position:sticky;top:max(16px,env(safe-area-inset-top,0px));max-height:calc(100vh - 32px);overflow:auto;padding-right:4px}
+.grp{margin-bottom:16px}
+.grp-h{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);padding:0 10px 6px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.it{display:grid;grid-template-columns:34px 1fr 18px;gap:8px;align-items:center;width:100%;text-align:left;background:transparent;border:0;border-radius:4px;padding:8px 10px;font:600 .95rem/1.25 var(--f-body);color:var(--ink);cursor:pointer}
+.it:hover{background:var(--sheet)}
+.it .c{font-family:var(--f-mono);font-size:.72rem;color:var(--ink-2)}
+.it .ck{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line)}
+.it.done .ck{background:var(--ok);border-color:var(--ok)}
+.it[aria-current="true"]{background:var(--ink);color:var(--paper)}
+.it[aria-current="true"] .c{color:var(--paper);opacity:.75}
+.mobile-pick{display:none}
+.mobile-pick select{width:100%;font:600 1rem var(--f-body);padding:10px;border:1.5px solid var(--ink);border-radius:4px;background:var(--sheet);color:var(--ink)}
+
+/* Activity sheet */
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:28px clamp(16px,3vw,32px) 24px;display:grid;gap:26px;min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--saffron);margin-bottom:8px}
+h2{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800;font-stretch:80%}
+h3{font-size:1.06rem;font-weight:750;font-stretch:92%;margin-bottom:10px}
+.compare{display:grid;grid-template-columns:1fr 1.25fr;gap:0;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.compare > div{padding:14px 18px;min-width:0}
+.was{background:var(--paper);color:var(--ink-2)}
+.was p{font-style:italic}
+.now{background:var(--teal-soft);border-left:1.5px solid var(--ink)}
+.now p{font-weight:600;font-size:1.04rem}
+.now .lbl{color:var(--teal)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{font:600 .9rem var(--f-body);padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--saffron);border-color:var(--saffron);color:var(--on-accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;flex-direction:column;gap:1px;padding:7px 12px;border:1.5px solid var(--teal);border-radius:5px;text-decoration:none;color:var(--ink);background:var(--sheet);max-width:260px}
+.chip b{font-size:.92rem;color:var(--teal)}
+.chip span{font-size:.78rem;color:var(--ink-2);line-height:1.3}
+.chip:hover{background:var(--teal-soft)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:10px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px}
+ol.steps li::before{content:counter(s);font-family:var(--f-mono);font-size:.8rem;font-weight:600;width:24px;height:24px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;margin-top:1px}
+.pbox{background:var(--paper);border:1.5px dashed var(--ink-2);border-radius:5px;padding:14px 16px;min-width:0}
+.pb-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.pb-head h3{margin:0}
+pre.prompt{white-space:pre-wrap;word-break:break-word;font-family:var(--f-mono);font-size:.83rem;line-height:1.6;margin:0}
+mark{padding:0 3px;border-radius:3px;color:inherit}
+mark.auto{background:var(--saffron-soft);box-shadow:inset 0 -2px 0 var(--saffron)}
+mark.you{background:var(--teal-soft);box-shadow:inset 0 -2px 0 var(--teal)}
+.legend{font-size:.8rem;color:var(--ink-2);margin-top:10px}
+.btn{font:600 .88rem var(--f-body);padding:7px 14px;border-radius:4px;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--paper)}
+.btn.primary{background:var(--saffron);border-color:var(--saffron);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.small{padding:4px 10px;font-size:.8rem}
+.example{border-top:2px solid var(--ink);padding-top:18px}
+.ex-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:12px}
+.ex-head h3{margin:0}
+.tag{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--ink-2);border-radius:999px;color:var(--ink-2)}
+.ex-body{display:grid;gap:12px;max-width:100%}
+.ex-body p,.ex-body li{max-width:75ch}
+.ex-body ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.note{background:var(--saffron-soft);border-radius:4px;padding:10px 14px;font-size:.93rem}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);background:var(--paper);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr.hl td{background:var(--saffron-soft);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.formula{font-family:var(--f-mono);font-size:.9rem;background:var(--paper);padding:10px 14px;border-radius:4px;overflow-x:auto}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;border-top:1px solid var(--line);padding-top:18px}
+.foot ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.done-btn[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--on-accent)}
+.pager{display:flex;justify-content:space-between;gap:12px}
+.pager button{background:none;border:0;font:600 .9rem var(--f-body);color:var(--teal);cursor:pointer;padding:4px 0;text-align:left}
+.pager button:last-child{text-align:right}
+.pager button[disabled]{visibility:hidden}
+
+/* Tools */
+.tool{background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;padding:18px clamp(14px,2.5vw,22px);display:grid;gap:14px;min-width:0}
+.tool-head p{color:var(--ink-2);font-size:.93rem}
+.tool-head h3{margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row input,.row select,.field input{font:1rem var(--f-body);padding:7px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink);min-width:0}
+.row input[type="text"]{flex:1 1 220px}
+.mx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.q{border-radius:5px;padding:12px 14px;min-height:130px;border:1.5px solid var(--line);background:var(--sheet)}
+.q1{background:var(--saffron-soft);border-color:var(--saffron)}
+.q2{background:var(--teal-soft);border-color:var(--teal)}
+.q4{background:transparent;border-style:dashed}
+.q-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:8px}
+.q-h b{font-family:var(--f-display);font-stretch:88%;font-size:1rem}
+.q-h small{font-family:var(--f-mono);font-size:.68rem;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+.q ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.q li{display:flex;justify-content:space-between;gap:8px;align-items:start;background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:5px 6px 5px 10px;font-size:.92rem}
+.x{border:0;background:none;color:var(--ink-2);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 4px}
+.x:hover{color:var(--bad)}
+.empty{color:var(--ink-2);font-size:.85rem;font-style:italic}
+.gtable{display:grid;gap:6px}
+.grow{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px 32px;gap:6px;align-items:center}
+.grow input{font:.93rem var(--f-body);padding:6px 8px;border:1.5px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink);width:100%;min-width:0}
+.grow.h span{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+.gchart{overflow-x:auto;background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:10px}
+.gc{display:grid;gap:4px 0;font-size:.85rem}
+.gc .gl{padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;align-self:center}
+.gc .wk{font-family:var(--f-mono);font-size:.68rem;color:var(--ink-2);text-align:center;border-left:1px solid var(--line)}
+.gc .lane{display:grid;border-left:1px solid var(--line);background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:var(--cw) 100%;height:26px;align-items:center}
+.gc .bar{height:18px;border-radius:3px;background:var(--teal);color:var(--on-accent);font-family:var(--f-mono);font-size:.68rem;display:flex;align-items:center;padding-left:6px;white-space:nowrap;overflow:hidden}
+.gc .bar.crit{background:var(--saffron)}
+.eoq{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.field label{display:block;font-size:.85rem;color:var(--ink-2);margin-bottom:4px}
+.field input{width:100%;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5px;background:var(--ink);border:1.5px solid var(--ink)}
+.stat{background:var(--sheet);padding:10px 14px}
+.stat .v{font-family:var(--f-display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums;font-stretch:85%}
+.stat .k{font-size:.8rem;color:var(--ink-2)}
+.quiz{display:grid;gap:14px}
+.qq{background:var(--sheet);border:1px solid var(--line);border-radius:5px;padding:14px 16px}
+.qq p.qt{font-weight:600;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px}
+.opt{text-align:left;font:.93rem var(--f-body);padding:8px 12px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt:hover:not([disabled]){border-color:var(--ink)}
+.opt[disabled]{cursor:default}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.expl{margin-top:8px;font-size:.88rem;color:var(--ink-2)}
+.score{font-family:var(--f-display);font-weight:800;font-size:1.2rem;font-stretch:88%}
+
+/* Rules and resources */
+.rules{margin-top:48px;display:grid;gap:30px}
+.rules > header h2{font-size:clamp(1.6rem,3.2vw,2.2rem)}
+.rules > header p{color:var(--ink-2);max-width:65ch;margin-top:8px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rcard{background:var(--sheet);border:1px solid var(--line);border-radius:5px;padding:14px 16px}
+.rcard b{display:block;font-family:var(--f-display);font-stretch:90%;font-size:1rem;margin-bottom:4px}
+.rcard p{font-size:.93rem;color:var(--ink-2)}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:20px clamp(16px,3vw,26px);display:grid;gap:12px;min-width:0}
+.panel-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.decl{font-family:var(--f-mono);font-size:.84rem;white-space:pre-wrap;background:var(--paper);border:1.5px dashed var(--ink-2);border-radius:5px;padding:14px;margin:0;line-height:1.65}
+.dir{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.dir a{display:block;padding:10px 12px;background:var(--sheet);border:1px solid var(--line);border-radius:4px;text-decoration:none;color:var(--ink)}
+.dir a:hover{border-color:var(--teal)}
+.dir b{color:var(--teal);display:block}
+.dir span{font-size:.84rem;color:var(--ink-2)}
+footer{margin-top:36px;font-size:.85rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:16px;max-width:90ch}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:4px;font-weight:600;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.show{opacity:1}
+
+/* Submission */
+.submit{border:1.5px solid var(--ink);border-radius:6px;padding:18px clamp(14px,2.5vw,22px);display:grid;gap:12px;background:var(--sheet)}
+.sub-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+.sub-head h3{margin:0}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.fgrid .full{grid-column:1/-1}
+.f{min-width:0}
+.f label,.f .flabel{display:block;font-size:.85rem;font-weight:600;margin-bottom:4px}
+.f input[type="text"],.f input[type="url"],.f input[type="password"],.f textarea{width:100%;font:1rem var(--f-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink)}
+.f textarea{min-height:96px;resize:vertical}
+.f small{display:block;color:var(--ink-2);font-size:.8rem;margin-top:3px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 16px}
+.checks label{display:flex;gap:6px;align-items:center;font-weight:400;font-size:.92rem;margin:0}
+.decl-check{display:flex;gap:10px;align-items:flex-start;background:var(--teal-soft);padding:10px 12px;border-radius:4px;font-size:.93rem}
+.decl-check input{margin-top:4px}
+.filelist{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.filelist li{display:flex;justify-content:space-between;gap:8px;font-size:.88rem;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:4px 6px 4px 10px}
+.msg{display:block;font-size:.92rem;padding:8px 12px;border-radius:4px;margin:0}
+.msg.ok{background:var(--ok-soft)} .msg.err{background:var(--bad-soft)} .msg.info{background:var(--paper)}
+.pill{display:inline-block;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);border-color:var(--ok)} .pill.warn{background:var(--saffron-soft);border-color:var(--saffron)}
+dialog{border:1.5px solid var(--ink);border-radius:6px;background:var(--sheet);color:var(--ink);padding:0;width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 48px)}
+dialog::backdrop{background:rgba(10,15,20,.55)}
+.dlg{padding:20px clamp(16px,3vw,26px);display:grid;gap:14px}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dlg-head h3{margin:0}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .index{display:none}
+  .mobile-pick{display:block}
+  .two,.panel-two{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .compare{grid-template-columns:minmax(0,1fr)}
+  .now{border-left:0;border-top:1.5px solid var(--ink)}
+  .mx{grid-template-columns:minmax(0,1fr)}
+  .fgrid{grid-template-columns:minmax(0,1fr)}
+  .grow{grid-template-columns:minmax(0,1fr) 54px 54px 28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>html{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="hero">
+    <p class="kicker">Section VII · Suggested micro project / assignment / activities · Self learning</p>
+    <h1>Management <em>AI</em> Lab</h1>
+    <p class="lede">Each self-learning activity from the syllabus, redesigned as an AI-assisted assignment. Every activity has steps, a starter prompt, a worked example and the evidence to submit. Choose your branch and the prompts and examples switch to your field.</p>
+    <div class="titleblock" role="group" aria-label="Course details">
+      <div class="tb"><span class="lbl">Course</span><div class="v">Management</div></div>
+      <div class="tb"><span class="lbl">Activities</span><div class="v">14 across 6 types</div></div>
+      <div class="tb"><label class="lbl" for="branch">Your branch</label><select id="branch"></select></div>
+      <div class="tb"><span class="lbl">Your progress</span><div class="v" id="prog">0 of 14 done</div><div class="meter"><i id="progBar" style="width:0%"></i></div></div>
+      <div class="tb"><span class="lbl">Submissions</span><button class="btn small" data-act="open-marks">Check my marks</button></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="index" id="index" aria-label="Activities"></nav>
+    <div class="mobile-pick"><label class="lbl" for="mobilePick">Activity</label><select id="mobilePick"></select></div>
+    <article class="sheet" id="detail" aria-live="polite"></article>
+  </main>
+
+  <section class="rules" aria-labelledby="rulesH">
+    <header>
+      <p class="eyebrow">For students and teachers</p>
+      <h2 id="rulesH">Using AI the right way</h2>
+      <p>AI is a study partner here, not a ghost-writer. These rules apply to every activity above, and the declaration and prompt journal are part of every submission.</p>
+    </header>
+    <div class="rgrid">
+      <div class="rcard"><b>Do your own work first</b><p>Read, watch, observe or draft before opening an AI tool. Then use AI to check, question and improve what you made.</p></div>
+      <div class="rcard"><b>Keep a prompt journal</b><p>Record each prompt, what the AI answered, and what you kept or changed. Screenshots are fine.</p></div>
+      <div class="rcard"><b>Verify every fact</b><p>AI tools can invent dates, clauses, numbers and quotes. Check each one against a book, the standard, or an official website.</p></div>
+      <div class="rcard"><b>Protect people's data</b><p>Never paste names, phone numbers, marks or confidential company data of others. Anonymise survey and feedback data first.</p></div>
+      <div class="rcard"><b>Declare your AI use</b><p>Attach the AI-use declaration below. Using AI openly is allowed. Hiding it is not.</p></div>
+      <div class="rcard"><b>Your words, your analysis</b><p>AI-written text submitted as your own is not accepted. Conclusions and reflections must be in your own words.</p></div>
+    </div>
+
+    <div class="panel-two">
+      <div class="panel">
+        <h3>Prompt journal format</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>Date</th><th>Tool</th><th>Prompt (short)</th><th>AI output used?</th><th>Changed / verified with</th></tr></thead>
+          <tbody>
+            <tr><td>02 Dec</td><td>Perplexity</td><td>Scope of ISO 50001</td><td>Partly</td><td>Year corrected from iso.org</td></tr>
+            <tr><td>03 Dec</td><td>ChatGPT</td><td>Feedback on article draft</td><td>3 of 7 tips</td><td>EOQ formula checked in textbook</td></tr>
+          </tbody>
+        </table></div>
+        <p class="legend">Example rows. Keep at least one row per AI session.</p>
+      </div>
+      <div class="panel">
+        <div class="pb-head"><h3>AI-use declaration</h3><button class="btn small" data-act="copy-decl">Copy</button></div>
+<pre class="decl" id="decl">I, [Name], Enrollment No. [__________], declare that
+for the activity "[Activity title]" I used [AI tools]
+for [brainstorming / feedback / fact-finding / formatting].
+
+All facts, figures and quotes were checked against
+[books, standards, websites]. The analysis, conclusions
+and final text are my own. My prompt journal is attached.
+
+Signature: __________        Date: __________</pre>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Suggested assessment (10 marks per activity)</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Criterion</th><th>What the teacher looks for</th><th class="num">Marks</th></tr></thead>
+        <tbody>
+          <tr><td>Concept understanding</td><td>Correct use of management concepts and terms from the unit</td><td class="num">3</td></tr>
+          <tr><td>Own work before AI</td><td>Handwritten notes, first draft, observations or data collected by the student</td><td class="num">2</td></tr>
+          <tr><td>Use of AI</td><td>Clear prompts, sensible follow-up questions, complete prompt journal</td><td class="num">2</td></tr>
+          <tr><td>Verification and sources</td><td>AI output checked; references listed with dates</td><td class="num">2</td></tr>
+          <tr><td>Presentation and reflection</td><td>Neat output and an honest note on what AI helped with and where it was wrong</td><td class="num">1</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="panel">
+      <h3>AI platform directory</h3>
+      <p class="legend" style="margin:0">Most of these have a free tier. Use your college email where an account is needed, and follow each platform's age and usage rules.</p>
+      <div class="dir" id="dir"></div>
+    </div>
+  </section>
+
+  <footer>Examples marked <span class="tag">Illustrative</span> use made-up figures to show the format; replace them with your own data. Company and standard details change over time, so confirm them from official sources before submitting. <a href="teacher.html">Teacher marking page</a></footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="marksDlg" aria-labelledby="marksH">
+  <div class="dlg">
+    <div class="dlg-head"><h3 id="marksH">My submissions and marks</h3><button class="btn small" data-act="close-marks">Close</button></div>
+    <form id="marksForm" class="fgrid" novalidate>
+      <div class="f"><label for="mEnroll">Enrollment number</label><input type="text" id="mEnroll" autocomplete="off"></div>
+      <div class="f"><label for="mPin">PIN</label><input type="password" id="mPin" inputmode="numeric" maxlength="6" autocomplete="off"></div>
+      <div class="full row"><button class="btn primary" type="submit">Show my marks</button></div>
+    </form>
+    <div id="marksOut"></div>
+  </div>
+</dialog>
+
+<script src="config.js"></script>
+<script>
+const BR = {
+  CO:{name:'Computer Engineering',field:'software and IT services',iso:['ISO/IEC 27001','Information security (cyber security) management'],org:'TCS or Infosys',scm:'Odoo Inventory',safe:'computer lab',proj:'College canteen ordering web app',
+    gantt:[['Requirement gathering',1,1],['UI/UX design',2,1],['Database and backend',3,2],['Frontend and integration',4,2],['Testing and bug fixing',6,1],['Deployment and user training',7,1]],
+    hira:[['Long hours at computer','Eye strain, back pain',4,2,'20-20-20 eye rule, adjustable chairs, screen at eye level'],['Extension boards in lab','Electric shock, fire',2,5,'ISI-marked boards, no daisy-chaining, RCCB, CO₂ extinguisher']]},
+  IF:{name:'Information Technology',field:'IT services, networking and cloud',iso:['ISO/IEC 27001','Information security (cyber security) management'],org:'Wipro or Capgemini',scm:'Zoho Inventory',safe:'network and server room',proj:'Department library management system',
+    gantt:[['Study library workflow',1,1],['System design',2,1],['Database setup',3,1],['Module development',3,3],['Testing',6,1],['Go-live and staff training',7,1]],
+    hira:[['Work inside network rack','Electric shock, tripping on cables',2,4,'Cable trays, power off before work, labelled cables'],['Opening a phishing email','Data loss, ransomware',3,4,'Awareness training, multi-factor login, offline backups']]},
+  ME:{name:'Mechanical Engineering',field:'manufacturing and machine shops',iso:['IATF 16949:2016','Automotive quality management (replaced ISO/TS 16949)'],org:'Bajaj Auto or Kirloskar',scm:'SAP S/4HANA (materials management)',safe:'machine shop',proj:'Installing a CNC lathe in the institute workshop',
+    gantt:[['Vendor quotations and selection',1,2],['Foundation preparation',2,2],['Delivery and installation',4,1],['Electrical connection',4,1],['Trial run and calibration',5,1],['Operator training',6,1]],
+    hira:[['Turning on lathe','Entanglement with rotating chuck',3,5,'Chuck guard, no loose clothing, remove chuck key, emergency stop'],['Bench grinding','Flying particles into eyes',3,4,'Safety goggles, tool-rest gap of 3 mm or less, wheel guard']]},
+  AE:{name:'Automobile Engineering',field:'automobile manufacturing and service',iso:['IATF 16949:2016','Automotive quality management (replaced ISO/TS 16949)'],org:'Tata Motors or Maruti Suzuki',scm:'SAP S/4HANA or Oracle SCM Cloud',safe:'vehicle service station',proj:'Setting up a two-wheeler service bay',
+    gantt:[['Layout plan',1,1],['Equipment purchase',2,2],['Civil and electrical work',2,3],['Equipment installation',5,1],['Staff training',6,1],['Trial service run',7,1]],
+    hira:[['Lifting vehicle on hoist','Vehicle falling',2,5,'Rated hoist, lock pins engaged, trained operator only'],['Battery charging','Acid burns, hydrogen explosion',2,4,'Ventilation, gloves and goggles, no sparks nearby']]},
+  CE:{name:'Civil Engineering',field:'building construction and infrastructure',iso:['ISO/DIS 4931-1','Buildings and civil engineering works (draft standard)'],org:'L&T Construction or Shapoorji Pallonji',scm:'Odoo or SAP S/4HANA for site material',safe:'building construction site',proj:'G+1 residential building (structural work)',
+    gantt:[['Site survey and layout',1,1],['Excavation',2,2],['Foundation and plinth',4,3],['Ground floor columns and slab',7,3],['First floor columns and slab',10,3],['Brickwork',12,3]],
+    hira:[['Work on scaffolding','Fall from height',3,5,'Guard rails, full-body harness, inspected scaffold tag'],['Excavation deeper than 1.5 m','Trench collapse',2,5,'Shoring or sloping, barricades, ladder access']]},
+  EE:{name:'Electrical Engineering',field:'power distribution and electrical contracting',iso:['ISO 50001','Energy management'],org:'MSEDCL (Mahavitaran) or Siemens',scm:'SAP S/4HANA',safe:'substation and panel room',proj:'10 kW rooftop solar PV system at the institute',
+    gantt:[['Load survey and design',1,1],['Approvals and net-metering application',2,3],['Procurement',2,2],['Mounting structure',4,1],['Panel and inverter installation',5,1],['Testing and commissioning',6,1]],
+    hira:[['Panel maintenance','Electric shock, arc flash',3,5,'Lockout-tagout, test before touch, insulated gloves, arc-rated PPE'],['Work on distribution pole','Fall, back-feed shock',2,5,'Permit-to-work, earthing on both sides, safety belt']]},
+  EJ:{name:'Electronics & Telecommunication',field:'electronics manufacturing and telecom',iso:['ISO/IEC 27001','Information security for telecom networks'],org:'Bharat Electronics Ltd (BEL) or Reliance Jio',scm:'Zoho Inventory',safe:'electronics lab',proj:'IoT-based smart attendance system',
+    gantt:[['Requirement analysis',1,1],['Circuit design',2,1],['PCB and hardware',3,2],['Firmware and cloud',4,2],['Integration testing',6,1],['Demo and report',7,1]],
+    hira:[['Soldering','Burns, lead and flux fumes',4,2,'Fume extractor, iron stand, wash hands after work'],['Handling PCBs and ICs','Static damage to components',4,2,'ESD wrist strap, anti-static mat']]},
+  CH:{name:'Chemical Engineering',field:'chemical and food processing',iso:['ISO 22000','Food safety management'],org:'Reliance Industries or Deepak Nitrite',scm:'SAP S/4HANA',safe:'process plant',proj:'Upgrading an effluent treatment plant',
+    gantt:[['Effluent audit',1,1],['Process design',2,2],['Equipment procurement',3,3],['Installation',6,2],['Commissioning',8,1],['MPCB compliance report',9,1]],
+    hira:[['Handling acids and solvents','Chemical burns, inhalation',3,4,'Safety data sheet at hand, gloves, face shield, fume hood'],['Reactor operation','Over-pressure, runaway reaction',2,5,'Pressure relief valve, interlocks, HAZOP study, written SOPs']]}
+};
+
+const P = {
+  chatgpt:['ChatGPT','https://chatgpt.com','Drafting help, feedback, role-play, CSV analysis'],
+  claude:['Claude','https://claude.ai','Long documents, structured analysis, feedback'],
+  gemini:['Gemini','https://gemini.google.com','YouTube summaries, Google Workspace help'],
+  copilot:['Microsoft Copilot','https://copilot.microsoft.com','Help inside Word, Excel and PowerPoint'],
+  perplexity:['Perplexity','https://www.perplexity.ai','Search answers with source links'],
+  notebooklm:['NotebookLM','https://notebooklm.google.com','Questions on your own notes, PDFs and YouTube links'],
+  napkin:['Napkin AI','https://www.napkin.ai','Turns text into diagrams'],
+  gamma:['Gamma','https://gamma.app','Drafts slide decks from an outline'],
+  canva:['Canva','https://www.canva.com','Posters, slides and video editing'],
+  capcut:['CapCut','https://www.capcut.com','Video editing with auto captions'],
+  mermaid:['Mermaid Live','https://mermaid.live','Renders Gantt and flowchart code'],
+  wayground:['Wayground (Quizizz)','https://wayground.com','AI quiz generation, live class quizzes'],
+  kahoot:['Kahoot!','https://kahoot.com','Live classroom quizzes'],
+  forms:['Google Forms','https://forms.google.com','Quizzes and feedback forms'],
+  sheets:['Google Sheets','https://sheets.google.com','Data tables, charts, quick forecasts'],
+  nptel:['NPTEL','https://nptel.ac.in','Free IIT lectures on management and operations'],
+  swayam:['SWAYAM','https://swayam.gov.in','Free government online courses'],
+  odoo:['Odoo','https://www.odoo.com','Open-source ERP with inventory and purchase'],
+  zoho:['Zoho Inventory','https://www.zoho.com/inventory/','Inventory and order management'],
+  iso:['ISO.org','https://www.iso.org','Official title and status of each standard'],
+  ted:['TEDx talks','https://www.youtube.com/results?search_query=TEDx+leadership+management+skills','Talks on leadership and managerial skills'],
+  linkedin:['LinkedIn','https://www.linkedin.com','Company pages and job descriptions'],
+  insight:['Insight Timer','https://insighttimer.com','Free guided meditation timer']
+};
+
+const SAMPLE_MX = [
+  {t:'Submit Management micro-project report (due tomorrow)',q:1},{t:'Revise for Friday unit test',q:1},
+  {t:'Practise 5 aptitude questions daily for placements',q:2},{t:'Evening sports, 45 minutes',q:2},{t:'Plan next semester’s certification course',q:2},
+  {t:'Reply to class group polls',q:3},{t:'Friend asks you to print notes right now',q:3},
+  {t:'Scrolling reels',q:4},{t:'Re-watching a series',q:4}
+];
+
+const QUIZ = [
+  {q:'Who gave the 14 principles of management?',o:['F. W. Taylor','Henri Fayol','Peter Drucker','Elton Mayo'],a:1,e:'Henri Fayol, a French mining engineer, published the 14 principles in 1916, for example division of work and unity of command.'},
+  {q:'"Scientific management" is mainly associated with:',o:['Henri Fayol','Abraham Maslow','F. W. Taylor','Edward de Bono'],a:2,e:'F. W. Taylor used time and motion study to find the best way to do each job.'},
+  {q:'In the Eisenhower matrix, a task that is important but not urgent should be:',o:['Done immediately','Scheduled','Delegated','Dropped'],a:1,e:'Quadrant 2 tasks such as study, planning and health are scheduled so they get done before they become urgent.'},
+  {q:'Annual demand 1,200 units, ordering cost ₹100 per order, holding cost ₹6 per unit per year. The EOQ is:',o:['100 units','200 units','400 units','600 units'],a:1,e:'EOQ = √(2 × 1200 × 100 ÷ 6) = √40,000 = 200 units.'},
+  {q:'In Six Thinking Hats, the Black hat stands for:',o:['Facts and data','Feelings','Caution and risks','New ideas'],a:2,e:'Black is the judgement hat: what could go wrong. White is facts, Red is feelings, Green is new ideas.'},
+  {q:'Kaizen means:',o:['A big one-time change','Continuous small improvement','Final quality inspection','Just-in-time delivery'],a:1,e:'Kaizen is Japanese for "change for the better": small, continuous, low-cost improvements made by everyone.'},
+  {q:'ABC analysis classifies inventory by:',o:['Weight','Annual consumption value','Criticality to production','Shelf life'],a:1,e:'A items are few but have high annual usage value; C items are many with low value. Criticality is VED analysis.'},
+  {q:'A Gantt chart mainly shows:',o:['The organisation hierarchy','Tasks plotted against time','Cash flow','Cause and effect'],a:1,e:'Henry Gantt’s bar chart shows when each task starts, how long it runs and which tasks overlap.'},
+  {q:'A quality circle is:',o:['A group of managers who inspect products','A small voluntary group of workers from one area who solve work problems','An ISO certification body','A customer complaint cell'],a:1,e:'A quality circle is usually 6 to 10 employees from the same work area who meet regularly to solve quality problems.'},
+  {q:'Which standard covers information security management?',o:['ISO 50001','ISO 22000','ISO/IEC 27001','IATF 16949'],a:2,e:'ISO/IEC 27001 is information security. ISO 50001 is energy, ISO 22000 is food safety and IATF 16949 is automotive quality.'}
+];
+
+const ACT = [
+ {id:'book-note',code:'A1',cat:'Assignment / Article',name:'One-page book note',
+  orig:'Make a one page note based on a book of management you read.',
+  now:'Read the book yourself, use an AI notebook to quiz you on it and find gaps in your notes, then produce a one-page note with one summary diagram.',
+  plat:['notebooklm','claude','chatgpt','napkin'],
+  steps:['Pick a book: <i>The Goal</i> (Eliyahu Goldratt), <i>The 7 Habits of Highly Effective People</i> (Stephen Covey), <i>Wings of Fire</i> (A. P. J. Abdul Kalam), <i>The Toyota Way</i> (Jeffrey Liker) or <i>Atomic Habits</i> (James Clear).',
+   'Read it and write 10 to 15 key points chapter by chapter, by hand. No AI at this stage.',
+   'Upload your own notes to NotebookLM, or paste them into Claude or ChatGPT. Ask it to quiz you and answer without looking.',
+   'Ask the AI which major ideas are missing from your notes. Check each suggestion against the book before adding it.',
+   'Write the one-page note: 5 key ideas, 3 links to syllabus concepts, 1 application to {B}, and your own takeaway.',
+   'Draw one summary diagram by hand or with Napkin AI, then attach your prompt journal.'],
+  prompt:'I have read the book "[book title]" by [author]. Below are my own chapter notes.\n1. Ask me 5 questions, one at a time, to check my understanding. Wait for each answer.\n2. Then list important ideas that are missing from my notes. Do not invent quotes or page numbers.\n3. Suggest how 3 ideas apply to a diploma student in {B}.\n\nMy notes:\n[paste your notes]',
+  ex:{title:'The Goal, by Eliyahu Goldratt',illus:false,html:b=>`
+   <div class="tbl"><table><thead><tr><th>Section of the note</th><th>Content</th></tr></thead><tbody>
+   <tr><td>Core idea</td><td>A plant exists to make money. Judge every decision by throughput, inventory and operating expense, not by how busy machines look.</td></tr>
+   <tr><td>Key ideas</td><td>1. The bottleneck (constraint) decides the output of the whole system. 2. An hour lost at the bottleneck is lost for the whole plant. 3. Extra inventory hides problems. 4. Local efficiency can hurt global results. 5. Five focusing steps: identify, exploit, subordinate, elevate, repeat.</td></tr>
+   <tr><td>Syllabus links</td><td>Planning and controlling, inventory management, productivity.</td></tr>
+   <tr><td>Application to ${b.name}</td><td>In your project, find the slowest step (for example ${b.gantt[2][0].toLowerCase()}) and plan the rest of the schedule around it.</td></tr>
+   <tr><td>My takeaway</td><td>Before working harder, find what is actually limiting the result.</td></tr>
+   </tbody></table></div>`},
+  evid:['One A4 page, handwritten or typed','One summary diagram','Prompt journal and AI-use declaration']},
+
+ {id:'inventory-article',code:'A2',cat:'Assignment / Article',name:'Inventory management article',
+  orig:'Write a short article on inventory management exploring online learning resources.',
+  now:'Research with a citation-first AI search tool and a free NPTEL or SWAYAM lecture, solve one EOQ problem yourself, and write a 600 to 800 word article in your own words.',
+  plat:['perplexity','nptel','swayam','chatgpt'],tool:'eoq',
+  steps:['Search Perplexity for EOQ, ABC analysis, JIT and Kanban. Save at least 3 sources: a lecture, a textbook and an industry example.',
+   'Watch one NPTEL or SWAYAM lecture on inventory control and note 5 points.',
+   'Outline: what inventory is, why holding it costs money, EOQ, ABC and VED analysis, JIT, software used, an example from {F}.',
+   'Solve one EOQ problem by hand, then check it with the calculator below.',
+   'Write the full draft yourself. Then ask an AI tool for feedback only, not a rewrite.',
+   'Revise, add the reference list with access dates, and attach your prompt journal.'],
+  prompt:'Act as an editor for a diploma engineering student. Below is my 700-word article on inventory management for the {F} sector.\nGive feedback on:\n1. Structure and flow\n2. Technical accuracy of EOQ, ABC analysis and JIT\n3. Clarity for a first-year reader\nDo not rewrite the article. List specific suggestions and quote the sentence each one refers to.\n\n[paste your article]',
+  ex:{title:'EOQ calculation for the article',illus:true,html:b=>`
+   <p>A ${b.field} unit uses a part at a steady rate. Annual demand <b>D = 12,000 units</b>, ordering cost <b>S = ₹500</b> per order, holding cost <b>H = ₹12</b> per unit per year.</p>
+   <div class="formula">EOQ = √(2DS / H) = √(2 × 12,000 × 500 / 12) = √1,000,000 = 1,000 units</div>
+   <ul><li>Orders per year = 12,000 / 1,000 = 12, about one order every 30 days.</li>
+   <li>Annual ordering cost = 12 × ₹500 = ₹6,000. Annual holding cost = (1,000 / 2) × ₹12 = ₹6,000.</li>
+   <li>At the EOQ the two costs are equal, which is a quick way to check your answer.</li></ul>`},
+  evid:['Article of 600 to 800 words','At least 3 references with access dates','Hand-worked EOQ example','Prompt journal and AI-use declaration']},
+
+ {id:'iso-report',code:'A3',cat:'Assignment / Article',name:'ISO standards report',
+  orig:'Prepare a report on ISO standards applicable to your field: a. IATF 16949-2016 (automotive), b. ISO 22000 (food safety), c. ISO 50001 (energy), d. ISO/IEC 27001 (cyber security), e. ISO/DIS 4931-1 (buildings and civil engineering works).',
+  now:'Use an AI search tool to research {ISO} for your branch, confirm every detail on iso.org, compare it with ISO 9001, and present it in a report and a 5-slide deck.',
+  plat:['perplexity','iso','claude','gamma'],
+  steps:['Your branch standard is <b>{ISO}</b> ({ISOA}). You may choose another from the list if your teacher agrees.',
+   'Ask Perplexity for the scope, main clauses, certification process and Indian companies certified. Keep every source link.',
+   'Open the standard’s page on iso.org and confirm its exact title, year and status (published, or DIS for a draft).',
+   'Ask an AI tool for a table comparing your standard with ISO 9001. Most ISO management standards share clauses 4 to 10.',
+   'Write the report: introduction, scope, key requirements, PDCA cycle, benefits, certification steps, an Indian company example.',
+   'Make a 5-slide deck with Gamma, then edit every slide yourself.'],
+  prompt:'I am a diploma student in {B}. Explain {ISO} ({ISOA}) in simple language:\n1. Scope and who needs it\n2. Main clauses 4 to 10, with one example each from {F}\n3. Certification steps for a company in India\n4. Benefits and costs for a small company\nGive sources I can check, and say clearly when you are not sure about a detail.',
+  ex:{title:'The five standards in the syllabus',illus:false,html:b=>`
+   <div class="tbl"><table><thead><tr><th>Standard</th><th>Field</th><th>What it manages</th><th>Typical user</th></tr></thead><tbody>
+   ${[['IATF 16949:2016','Automotive','Quality management for automotive production and service parts. It replaced ISO/TS 16949.','Auto component suppliers'],
+      ['ISO 22000','Food','Food safety management across the food chain, using HACCP principles','Dairies, food and beverage plants'],
+      ['ISO 50001','Energy','Energy management system to measure and improve energy performance','Factories, campuses, utilities'],
+      ['ISO/IEC 27001','Cyber security','Information security management system (ISMS) with risk-based controls','IT firms, banks, telecom'],
+      ['ISO/DIS 4931-1','Buildings and civil works','Draft international standard (DIS). Check the current title and status on iso.org','Construction and infrastructure']]
+     .map(r=>`<tr class="${r[0]===b.iso[0]?'hl':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
+   </tbody></table></div>
+   <p class="note">The highlighted row is the standard for ${esc(b.name)}. Use the table as the first section of your report.</p>`},
+  evid:['Report of 4 to 6 pages','5-slide deck','Source list with access dates','Prompt journal and AI-use declaration']},
+
+ {id:'time-matrix',code:'A4',cat:'Assignment / Article',name:'Time management matrix',
+  orig:'Prepare a 4 quadrant matrix of time management for managing the tasks.',
+  now:'List your real tasks for the coming week, let AI suggest a quadrant for each with reasons, decide the final placement yourself, and track how the week goes.',
+  plat:['chatgpt','gemini','claude'],tool:'matrix',
+  steps:['Write every task for the next 7 days: college, home and personal, with deadlines.',
+   'Ask an AI tool to sort them into the four quadrants and give a reason for each.',
+   'Correct the AI where it is wrong. You know your real deadlines and priorities.',
+   'Enter the final tasks in the matrix builder below.',
+   'Act on it: do Q1, put Q2 into your calendar, delegate or batch Q3, drop Q4.',
+   'After the week, write 100 words: how much time went to Q2, and what you would change.'],
+  prompt:'Here are my tasks for the next 7 days, with deadlines. Sort them into the Eisenhower matrix:\nQ1 urgent and important, Q2 important but not urgent, Q3 urgent but not important, Q4 neither.\nGive a one-line reason for each task, and suggest a time slot for every Q2 task.\nI am a {B} diploma student.\n\nTasks:\n[list your tasks with deadlines]',
+  ex:{title:'A diploma student’s week',illus:true,html:()=>`<p>The builder below starts with a sample week. Clear it and enter your own tasks, then copy the result into your submission.</p>`},
+  evid:['Completed matrix (copy or screenshot)','Weekly plan with Q2 time slots','100-word reflection','Prompt journal']},
+
+ {id:'scm-software',code:'A5',cat:'Assignment / Article',name:'Supply chain software report',
+  orig:'Prepare a report on any one software used for Supply Chain and Logistics Management.',
+  now:'Pick one supply chain software, use its free demo or trial to run a small purchase-to-delivery flow, and use AI to explain each module and term.',
+  plat:['perplexity','odoo','zoho','chatgpt'],
+  steps:['Suggested for {B}: <b>{SCM}</b>. Other options: SAP S/4HANA, Oracle SCM Cloud, Odoo, Zoho Inventory, Tally Prime.',
+   'Use Perplexity to collect the vendor, modules, pricing model and Indian users, with sources.',
+   'Open the free demo or trial and run a mini-flow: create a product, raise a purchase order, receive goods, create a sales order, deliver.',
+   'Take a screenshot at each step.',
+   'Ask AI to explain unclear terms such as GRN, reorder point, lead time and safety stock.',
+   'Write the report: introduction, modules, workflow with screenshots, benefits, limitations, comparison with one alternative.'],
+  prompt:'I am writing a report on {SCM} for supply chain management in {F}.\n1. Explain its main modules (purchase, inventory, warehouse, logistics, demand planning) in simple words.\n2. Describe a typical purchase-to-delivery workflow step by step.\n3. Give 3 strengths and 3 limitations for a small Indian company.\nMark anything you are not sure about so I can verify it.',
+  ex:{title:'Purchase-to-delivery flow in an ERP demo',illus:true,html:()=>`
+   <div class="tbl"><table><thead><tr><th>Step</th><th>Document</th><th>What happens</th><th class="num">Stock after</th></tr></thead><tbody>
+   <tr><td>1</td><td>Product master</td><td>Create "M8 hex bolt" with reorder rule: minimum 500, maximum 2,000</td><td class="num">400</td></tr>
+   <tr><td>2</td><td>Purchase order</td><td>Stock is below 500, so the system proposes buying 1,600 from the vendor</td><td class="num">400</td></tr>
+   <tr><td>3</td><td>Goods receipt (GRN)</td><td>1,600 bolts received and checked</td><td class="num">2,000</td></tr>
+   <tr><td>4</td><td>Sales order</td><td>Customer orders 300 bolts</td><td class="num">2,000</td></tr>
+   <tr><td>5</td><td>Delivery</td><td>300 bolts dispatched, invoice raised</td><td class="num">1,700</td></tr>
+   </tbody></table></div>`},
+  evid:['Report of 5 to 8 pages with screenshots','Glossary of 10 supply chain terms','Prompt journal and AI-use declaration']},
+
+ {id:'gantt-chart',code:'A6',cat:'Assignment / Article',name:'Gantt chart for a project',
+  orig:'Prepare a GANTT Chart for project management related to your field.',
+  now:'Ask AI to break a {B} project into tasks and durations, check the estimates with a teacher or site engineer, then draw the chart in the builder below or in Mermaid.',
+  plat:['chatgpt','claude','mermaid','sheets'],tool:'gantt',
+  steps:['Choose a project. The default for your branch is <b>{PROJ}</b>.',
+   'Ask AI for a work breakdown structure with durations and dependencies.',
+   'Check the durations with a teacher, senior or site engineer, and adjust them.',
+   'Enter the tasks in the builder below. The longest chain of dependent tasks is your critical path.',
+   'Copy the Mermaid code and render it at mermaid.live, or redraw the chart in Excel or Google Sheets.',
+   'Write 5 lines: milestones, critical tasks, and where a delay would hurt most.'],
+  prompt:'Create a work breakdown structure for the project "{PROJ}" for a team of 4 diploma students in {B}.\nList 6 to 10 tasks with duration in weeks, dependencies, and who is responsible.\nThen output the schedule as Mermaid gantt code with dateFormat YYYY-MM-DD, starting next Monday.',
+  ex:{title:'Chart for your branch',illus:true,html:b=>`<p>The builder below is loaded with a ${esc(b.proj.toLowerCase())} schedule. Bars in orange end in the last week, so any delay in them delays the whole project.</p>`},
+  evid:['Gantt chart (builder screenshot or Mermaid render)','Task table with durations and dependencies','Critical path note','Prompt journal']},
+
+ {id:'tedx-notes',code:'A7',cat:'Note Taking',name:'TEDx talk keyword notes',
+  orig:'Watch a TEDx Talk video on managerial skills and take notes in the form of keywords.',
+  now:'Take your own keyword notes first, then ask an AI tool for keywords from the same talk and compare the two lists to see what you missed.',
+  plat:['ted','notebooklm','gemini'],
+  steps:['Choose a TEDx talk on leadership, decision making or communication. Simon Sinek’s "How great leaders inspire action" (TEDxPugetSound) is a common choice.',
+   'Watch it once fully without taking notes.',
+   'Watch again with pauses and write 20 to 30 keywords as a mind map, by hand.',
+   'Paste the YouTube link into NotebookLM or Gemini and ask for the top 15 keywords with timestamps.',
+   'Compare: mark keywords you both found, ones only you found, and ones you missed.',
+   'Write 5 action points for yourself based on the talk.'],
+  prompt:'From this TEDx talk [YouTube link], list the 15 most important keywords or short phrases about managerial skills.\nFor each, give the timestamp and a one-line meaning.\nDo not summarise beyond that. I will compare your list with my own notes.',
+  ex:{title:'Comparison sheet for a leadership talk',illus:true,html:()=>`
+   <div class="tbl"><table><thead><tr><th>Found by both</th><th>Only in my notes</th><th>Only in AI list</th></tr></thead><tbody>
+   <tr><td>Golden Circle</td><td>Purpose over product</td><td>Law of diffusion of innovation</td></tr>
+   <tr><td>Why → How → What</td><td>Inside-out communication</td><td>Limbic brain and decisions</td></tr>
+   <tr><td>Trust</td><td>Belief drives loyalty</td><td>Early adopters</td></tr>
+   <tr><td>Inspire, not manipulate</td><td></td><td></td></tr>
+   </tbody></table></div>
+   <p>Missed keywords show where your attention dropped. Re-watch only those minutes.</p>`},
+  evid:['Handwritten keyword mind map','Comparison table','5 personal action points']},
+
+ {id:'case-studies',code:'A8',cat:'Case Study',name:'Case studies on five topics',
+  orig:'Prepare a case study and discuss the same on: a. Self Management Skills, b. Six Thinking Hats, c. Kaizen, d. Quality Circle, e. Safety Measures in different organizations related to your field.',
+  now:'Collect facts from a real place or person, use AI to structure the analysis with the right management tool, then hold a class discussion on your findings.',
+  plat:['chatgpt','claude','napkin'],
+  steps:['Pick a topic tab below and a real setting: your institute, a lab, a workshop, a local company or a person.',
+   'Collect facts first: visit, observe, time the process, interview, take photos with permission.',
+   'Use the starter prompt to structure the analysis with the topic’s method.',
+   'Check the analysis with a faculty mentor or the person in charge of the place.',
+   'Write the case: background, problem, analysis, solution, result, lessons.',
+   'Ask AI for 3 discussion questions, choose the best ones, and lead a 10-minute class discussion.'],
+  subs:[
+   {id:'self',name:'Self management',now:'Keep a 3-day time log, then use AI as a coach to find patterns and build a 4-week improvement plan with measurable targets.',
+    prompt:'Act as a self-management coach. Below is my 3-day time log and my goals for this semester.\nBefore giving advice, ask me 3 questions.\nThen identify 3 patterns that waste time, 3 strengths, and a 4-week improvement plan with measurable weekly targets.\n\nTime log:\n[paste log]\nGoals:\n[your goals]',
+    ex:{title:'Sneha, 5th semester {B}',illus:true,html:()=>`
+     <div class="tbl"><table><thead><tr><th>Stage</th><th>Finding</th></tr></thead><tbody>
+     <tr><td>Problem</td><td>Missed 3 practical submissions; phone screen time 4 h 10 min per day</td></tr>
+     <tr><td>Time log pattern</td><td>Studies late at night, starts tasks the day before deadlines</td></tr>
+     <tr><td>Actions</td><td>Two 25-minute Pomodoro blocks after college, phone in another room, Sunday weekly review</td></tr>
+     <tr><td>After 4 weeks</td><td>Screen time 2 h 30 min; all submissions on time</td></tr>
+     </tbody></table></div>`}},
+   {id:'hats',name:'Six Thinking Hats',now:'Run a real group discussion with one student per hat, then ask AI to analyse the same decision and compare which points each side missed.',
+    prompt:'Use Edward de Bono’s Six Thinking Hats to analyse this decision: [decision].\nContext: the {B} department of a polytechnic.\nGive 3 points for each hat: White (facts), Red (feelings), Black (risks), Yellow (benefits), Green (new ideas), Blue (process).\nEnd with a Blue-hat summary and a recommendation. Then ask me which hat I disagree with.',
+    ex:{title:'Should the institute install a 50 kW rooftop solar plant?',illus:true,html:()=>`
+     <div class="tbl"><table><thead><tr><th>Hat</th><th>Points raised</th></tr></thead><tbody>
+     <tr><td>White</td><td>Monthly electricity bill about ₹1.6 lakh; usable roof area about 400 m²</td></tr>
+     <tr><td>Red</td><td>Students are excited; accounts staff are worried about the upfront cost</td></tr>
+     <tr><td>Black</td><td>High capital cost, panel cleaning, monsoon output drop, roof leakage risk</td></tr>
+     <tr><td>Yellow</td><td>Lower bills, a live lab for students, green campus image</td></tr>
+     <tr><td>Green</td><td>Pay-as-you-save model, student cleaning teams, a live output display in the lobby</td></tr>
+     <tr><td>Blue</td><td>Get 3 quotations, calculate payback, decide in the next governing body meeting</td></tr>
+     </tbody></table></div>`}},
+   {id:'kaizen',name:'Kaizen',now:'Time a real process step by step, use AI to spot waste with the TIMWOODS list, then make one small low-cost improvement and measure it again.',
+    prompt:'Here is a step-by-step description of [process] in our {B} lab or workshop, with the time each step takes.\nIdentify waste using the 8 wastes of Lean (TIMWOODS).\nSuggest small, low-cost kaizen improvements, and give a before-and-after kaizen sheet format.\n\n[paste steps with times]',
+    ex:{title:'Reducing lathe setup time',illus:true,html:()=>`
+     <div class="tbl"><table><thead><tr><th>Item</th><th>Before</th><th>After</th></tr></thead><tbody>
+     <tr><td>Searching for tools</td><td class="num">12 min</td><td class="num">2 min</td></tr>
+     <tr><td>Fixing job and centring</td><td class="num">15 min</td><td class="num">9 min</td></tr>
+     <tr><td>Tool setting and trial cut</td><td class="num">13 min</td><td class="num">7 min</td></tr>
+     <tr><td><b>Total setup time</b></td><td class="num"><b>40 min</b></td><td class="num"><b>18 min</b></td></tr>
+     </tbody></table></div>
+     <p>Changes made: a tool shadow board beside the machine, a setup checklist, and pre-set tool holders. Cost under ₹1,500.</p>`}},
+   {id:'qc',name:'Quality circle',plat:['chatgpt','napkin','sheets'],now:'Form a circle of 6 students, choose a real recurring problem, use AI to draft the fishbone diagram, then collect real data for a Pareto chart.',
+    prompt:'We are a quality circle of 6 students studying this problem: [problem] in {F}.\n1. Draw a fishbone (Ishikawa) diagram in text using the 6M categories: Man, Machine, Method, Material, Measurement, Mother nature.\n2. Suggest what data to collect for a Pareto chart.\n3. Outline a 7-step QC story: problem, data, cause, countermeasure, implement, check, standardise.',
+    ex:{title:'Rejection of bushings for oversize bore',illus:true,html:()=>`
+     <ul><li><b>Problem:</b> 6% of bushings rejected at final inspection.</li>
+     <li><b>Pareto result:</b> 70% of rejections from oversize bore, mostly in the second half of each shift.</li>
+     <li><b>Root cause:</b> boring tool worn; no fixed tool-change interval.</li>
+     <li><b>Countermeasure:</b> change tool every 250 pieces, check first and last piece with a plug gauge.</li>
+     <li><b>Result:</b> rejection down to 1.5% in 3 weeks; the tool-change rule added to the work instruction.</li></ul>`}},
+   {id:'safety',name:'Safety measures',now:'Visit a {SAFE}, list hazards, use AI to build a risk assessment (HIRA) table, then compare safety practice in two organisations.',
+    prompt:'Prepare a Hazard Identification and Risk Assessment (HIRA) table for a {SAFE}.\nColumns: activity, hazard, possible harm, likelihood (1 to 5), severity (1 to 5), risk score, controls (elimination, substitution, engineering, administrative, PPE), responsible person.\nThen list 5 questions I should ask when comparing safety practice in two {F} organisations.',
+    ex:{title:'HIRA rows for a {SAFE}',illus:true,html:b=>`
+     <div class="tbl"><table><thead><tr><th>Activity</th><th>Hazard</th><th class="num">L</th><th class="num">S</th><th class="num">Risk</th><th>Controls</th></tr></thead><tbody>
+     ${b.hira.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="num">${r[2]}</td><td class="num">${r[3]}</td><td class="num"><b>${r[2]*r[3]}</b></td><td>${esc(r[4])}</td></tr>`).join('')}
+     </tbody></table></div>
+     <p>Risk = likelihood × severity. Scores of 15 and above need action before work continues.</p>`}}
+  ],
+  evid:['Case study report (3 to 5 pages) for the chosen topic','Evidence collected: photos, time log, data or interview notes','Discussion questions and class discussion summary','Prompt journal and AI-use declaration']},
+
+ {id:'recruitment',code:'A9',cat:'Case Study',name:'Recruitment and selection study',
+  orig:'Study the recruitment and selection process of any organization related to your field.',
+  now:'Map a real company’s hiring process from its careers page and seniors’ experience, then take an AI mock interview to experience the selection stages yourself.',
+  plat:['linkedin','perplexity','chatgpt','claude'],
+  steps:['Choose an organisation, for example {ORG}.',
+   'Map the stages from the careers page, LinkedIn, Perplexity and seniors who joined: sourcing, application, test, technical interview, HR interview, documents and medical, offer, induction.',
+   'Draw the process as a flowchart with Napkin AI or by hand.',
+   'Take an AI mock interview for a diploma trainee role at that company and save the transcript.',
+   'Ask the AI for feedback against the actual job description.',
+   'Discuss AI in hiring: Amazon dropped an experimental AI recruiting tool in 2018 after it showed bias against women. What safeguards should companies use?'],
+  prompt:'Act as an HR interviewer at a company like {ORG} hiring a diploma engineer in {B} as a graduate trainee.\nConduct a mock interview: 3 HR questions, 4 technical questions on {F}, and 1 situational question.\nAsk one question at a time and wait for my answer.\nAt the end, score me out of 10 on communication, technical knowledge and attitude, with tips to improve.',
+  ex:{title:'A typical campus hiring process',illus:true,html:b=>`
+   <div class="tbl"><table><thead><tr><th>Stage</th><th>Purpose</th><th>Management concept</th></tr></thead><tbody>
+   <tr><td>Campus drive notice</td><td>Attract eligible candidates</td><td>Recruitment (external source)</td></tr>
+   <tr><td>Online aptitude test</td><td>Screen large numbers fairly</td><td>Selection test</td></tr>
+   <tr><td>Technical interview</td><td>Check knowledge of ${esc(b.field)}</td><td>Selection interview</td></tr>
+   <tr><td>HR interview</td><td>Attitude, communication, fit</td><td>Selection interview</td></tr>
+   <tr><td>Documents and medical</td><td>Verify eligibility and fitness</td><td>Reference and medical check</td></tr>
+   <tr><td>Offer and induction</td><td>Join and learn company rules</td><td>Placement and orientation</td></tr>
+   </tbody></table></div>
+   <p class="note">Stages vary by company and year. Confirm the real stages for ${esc(b.org)} from its careers page or seniors.</p>`},
+  evid:['Process flowchart','Report of 3 to 4 pages','Mock interview transcript with your own reflection']},
+
+ {id:'shivaji-maharaj',code:'A10',cat:'Case Study',name:'Management lessons from Shivaji Maharaj',
+  orig:'Prepare a case study on management lessons based on life of Chhatrapati Shivaji Maharaj.',
+  now:'Use AI to map events from Chhatrapati Shivaji Maharaj’s life to management functions, verify every date and fact from a reliable book, and link each lesson to {F} today.',
+  plat:['claude','chatgpt','perplexity','gamma'],
+  steps:['Read about 6 to 8 major events in a reliable biography, for example by Jadunath Sarkar or G. B. Mehendale, or in your library.',
+   'Ask AI to map each event to a management function (planning, organising, staffing, directing, controlling) or one of Fayol’s principles.',
+   'Fact-check every date, name and place. AI tools often make mistakes with history.',
+   'Build a table: event, management lesson, modern example from {F}.',
+   'Write the case: introduction, lessons, relevance today, conclusion.',
+   'Present it as a 6-slide deck or a poster.'],
+  prompt:'Map the following events from the life of Chhatrapati Shivaji Maharaj to management principles, using either the functions (planning, organising, staffing, directing, controlling) or Fayol’s 14 principles:\n[list of events]\nFor each event, give the management lesson and one modern example from the {F} industry.\nKeep historical details short, and tell me which facts I must verify in a reliable book.',
+  ex:{title:'Events mapped to management lessons',illus:false,html:b=>`
+   <div class="tbl"><table><thead><tr><th>Event</th><th>Management lesson</th><th>Today in ${esc(b.field)}</th></tr></thead><tbody>
+   <tr><td>Capture of Torna fort as a teenager (c. 1646)</td><td>Initiative and vision; start small</td><td>Start a pilot project before scaling up</td></tr>
+   <tr><td>Ashtapradhan, the council of eight ministers</td><td>Organising and delegation with clear roles</td><td>Departments with defined responsibility</td></tr>
+   <tr><td>Network of hill forts, built and maintained</td><td>Resource planning and infrastructure</td><td>Planned maintenance of plant and assets</td></tr>
+   <tr><td>Building a navy and sea forts such as Sindhudurg</td><td>Long-term strategic foresight</td><td>Investing early in new technology</td></tr>
+   <tr><td>Escape from Agra (1666)</td><td>Crisis management and calm planning</td><td>Business continuity plans</td></tr>
+   <tr><td>Ganimi kava (guerrilla strategy)</td><td>Use your strengths against a larger rival</td><td>Small firms winning on speed and niche</td></tr>
+   <tr><td>Strict code of conduct for soldiers towards civilians</td><td>Discipline and ethics</td><td>Company code of conduct</td></tr>
+   </tbody></table></div>`},
+  evid:['Case study report of 4 to 5 pages','Event and lesson table','6-slide deck or poster','List of books and sources used for fact-checking']},
+
+ {id:'outbound-training',code:'A11',cat:'Case Study',name:'Outbound training video',
+  orig:'Conduct outbound training on managerial skills. Make a video and upload on social media.',
+  now:'Use AI to design outbound activities and debrief questions, run the session with your class, and edit a 60 to 90 second video with AI captions.',
+  plat:['chatgpt','claude','capcut','canva'],
+  steps:['Ask AI to design a 2-hour outbound programme with 4 activities mapped to skills: teamwork, leadership, communication and decision making.',
+   'Get faculty approval and plan safety: open ground, first-aid kit, no risky activities.',
+   'Get written consent from every participant before filming.',
+   'Run the session. Film short landscape clips of 10 to 20 seconds each.',
+   'Edit a 60 to 90 second video with auto captions, a title card and the learning points.',
+   'Upload on the institute’s official page, or your own with faculty approval. Record views and comments.'],
+  prompt:'Design a 2-hour outbound training session on managerial skills for 30 diploma students on an open college ground, using low-cost materials.\nInclude 4 activities, for example blindfold trust walk, tower of straws, human knot and minefield.\nFor each: objective, skill developed, materials, rules, safety precautions, time needed, and 3 debrief questions.\nEnd with a run-sheet with timings.',
+  ex:{title:'Run-sheet for a 2-hour session',illus:true,html:()=>`
+   <div class="tbl"><table><thead><tr><th>Time</th><th>Activity</th><th>Skill</th></tr></thead><tbody>
+   <tr><td>0:00–0:15</td><td>Ice-breaker and safety briefing</td><td>Communication</td></tr>
+   <tr><td>0:15–0:40</td><td>Tower of straws: tallest tower in 15 minutes</td><td>Planning and team roles</td></tr>
+   <tr><td>0:40–1:05</td><td>Blindfold trust walk in pairs</td><td>Trust and clear instructions</td></tr>
+   <tr><td>1:05–1:30</td><td>Minefield: guide a teammate past obstacles</td><td>Leadership and listening</td></tr>
+   <tr><td>1:30–1:45</td><td>Human knot</td><td>Problem solving under pressure</td></tr>
+   <tr><td>1:45–2:00</td><td>Debrief circle and feedback form</td><td>Reflection</td></tr>
+   </tbody></table></div>`},
+  evid:['Run-sheet and safety plan','Consent list','Video link','One-page report with participant feedback']},
+
+ {id:'quizzes',code:'A12',cat:'Quizzes',name:'Management quizzes',
+  orig:'Participate in online quizzes related to areas of management.',
+  now:'Take the practice quiz below, use AI to build a quiz on your weakest topic, correct it against the textbook, and host it for your class.',
+  plat:['wayground','kahoot','forms','nptel'],tool:'quiz',
+  steps:['Take the 10-question practice quiz below.',
+   'Note the questions you got wrong. They point to your weak topics.',
+   'Ask AI to generate 15 questions on your weakest topic with answers and explanations.',
+   'Check every answer in your textbook. Remove or fix wrong and confusing questions.',
+   'Host the quiz for your class on Wayground (Quizizz), Kahoot or Google Forms and collect scores.',
+   'Take at least 2 external online quizzes, such as NPTEL practice assignments, and keep score screenshots.'],
+  prompt:'Create 15 multiple-choice questions on [topic, for example Fayol’s principles] for diploma students in {B}.\nMix 5 easy, 6 medium and 4 hard questions.\nGive 4 options each, the correct answer, and a one-line explanation.\nInclude 3 questions that use examples from {F}.\nOutput as a table I can import into Google Forms or Wayground.',
+  ex:{title:'Practice quiz',illus:false,html:()=>`<p>Ten questions from the main units. Answers and explanations appear as you go.</p>`},
+  evid:['Practice quiz score','Your AI-generated quiz with corrections marked','Class results summary','External quiz score screenshots']},
+
+ {id:'workshops',code:'A13',cat:'Workshops',name:'Skill workshops for students',
+  orig:'Workshops to be conducted for students on: a. creativity techniques, b. time management, c. stress management, d. negotiation and conflict, e. goal setting, f. meditation, new product development.',
+  now:'In a team of 4, use AI to draft a 60 to 90 minute workshop plan, adapt it to your class, conduct it, and analyse the feedback with AI.',
+  plat:['chatgpt','claude','canva','forms'],
+  steps:['Form a team of 4 and choose a topic tab below.',
+   'Use the starter prompt to draft the workshop plan: objective, agenda, activities, materials.',
+   'Edit the plan for your class and get faculty approval.',
+   'Make slides and handouts with Canva or Gamma.',
+   'Conduct the workshop and collect feedback with a Google Form.',
+   'Remove names from the responses, then ask AI to summarise them. Write a 2-page report.'],
+  subs:[
+   {id:'creativity',name:'Creativity',now:'Students first generate ideas on their own using SCAMPER, then use AI as a second brainstorming partner and compare the two sets of ideas.',
+    prompt:'Plan a 75-minute creativity workshop for 40 diploma students in {B}.\nUse SCAMPER on a familiar product: [product, for example a college bag].\nInclude a warm-up, team SCAMPER round, an "AI versus human ideas" round, team pitches and reflection.\nGive timings, materials and facilitator instructions.',
+    ex:{title:'Agenda: SCAMPER on a college bag',illus:true,html:()=>`<ul><li>0:00 Warm-up: 30 circles in 3 minutes</li><li>0:10 SCAMPER in teams, one letter per team</li><li>0:30 Teams ask AI the same SCAMPER questions and mark ideas they had not thought of</li><li>0:50 Two-minute pitch per team</li><li>1:05 Reflection: where did AI help, and where were human ideas better?</li></ul>`}},
+   {id:'time',name:'Time management',now:'Students log one real day, sort tasks in the four-quadrant matrix, and use AI to turn the matrix into a realistic weekly timetable.',
+    prompt:'Plan a 60-minute time management workshop for diploma students in {B}.\nCover the Eisenhower matrix, the Pomodoro technique and time logs, with one hands-on activity each.\nInclude a 10-minute segment where students ask AI to build a weekly timetable from their own task list.',
+    ex:{title:'Agenda',illus:true,html:()=>`<ul><li>0:00 Quiz: where did your last 24 hours go?</li><li>0:10 Eisenhower matrix with students’ own tasks</li><li>0:25 Live 25-minute Pomodoro on a real assignment</li><li>0:50 AI builds a weekly timetable; students correct it</li></ul>`}},
+   {id:'stress',name:'Stress management',now:'Students learn to name their stressors and practise breathing and journaling, with AI used only to suggest journaling prompts. AI is not a counsellor.',
+    prompt:'Plan a 60-minute stress management workshop for diploma students before exams.\nInclude: identifying stressors, box breathing, a short physical activity, a guided journaling exercise, and where to get help.\nKeep it practical and non-clinical, and remind students that AI chatbots are not a substitute for a counsellor.',
+    ex:{title:'Agenda',illus:true,html:()=>`<ul><li>0:00 Stress thermometer: rate yourself 1 to 10 anonymously</li><li>0:10 Common exam stressors and what is in our control</li><li>0:25 Box breathing, 4 counts each way, 5 rounds</li><li>0:35 Journaling with 3 prompts</li><li>0:50 Where to get help: college counsellor, and Tele-MANAS, India’s free mental health helpline, 14416</li></ul>`}},
+   {id:'negotiation',name:'Negotiation and conflict',now:'Students negotiate with an AI role-playing a vendor, then discuss the five conflict-handling styles and their BATNA (best alternative to a negotiated agreement).',
+    prompt:'Role-play as a supplier selling [item, for example 500 bearings] to me, a purchase officer in {F}.\nStart at a price 20% above market. Be firm but realistic and do not reveal your lowest price.\nAfter 6 exchanges, stop and give me feedback on my negotiation: anchoring, concessions, questions asked, and my BATNA.',
+    ex:{title:'Agenda',illus:true,html:()=>`<ul><li>0:00 The five conflict styles: competing, collaborating, compromising, avoiding, accommodating</li><li>0:15 What is your BATNA?</li><li>0:25 Pairs negotiate with AI as the vendor</li><li>0:50 Compare final prices and tactics across teams</li></ul>`}},
+   {id:'goals',name:'Goal setting',now:'Students write their goals, use AI to convert vague goals into SMART goals, and pair up as accountability partners.',
+    prompt:'Turn these vague goals into SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound) for a diploma student in {B}:\n[your goals]\nFor each, add weekly milestones and one likely obstacle with a plan to handle it.',
+    ex:{title:'Vague to SMART',illus:true,html:()=>`<div class="tbl"><table><thead><tr><th>Vague goal</th><th>SMART goal</th></tr></thead><tbody><tr><td>Get good at my subject</td><td>Solve 40 practice problems from past papers by 31 January, 4 per week, checked by a senior</td></tr><tr><td>Get placed</td><td>Apply to 15 companies by March and complete 2 mock interviews per month</td></tr></tbody></table></div>`}},
+   {id:'meditation',name:'Meditation',now:'Use AI to write a 10-minute guided breathing script, then run it with a timer app. Keep it optional and non-religious.',
+    prompt:'Write a 10-minute guided breathing and attention script for a classroom of diploma students before an exam.\nKeep it simple, non-religious and optional to join.\nInclude timings, pauses in seconds, and a 1-minute closing reflection.',
+    ex:{title:'Session plan',illus:true,html:()=>`<ul><li>1 min: settle, feet flat, eyes closed or lowered</li><li>3 min: slow breathing, 4 counts in, 6 counts out</li><li>4 min: notice sounds, then body sensations</li><li>1 min: return attention to breath</li><li>1 min: write one word about how you feel</li></ul>`}},
+   {id:'npd',name:'New product development',plat:['chatgpt','claude','canva','forms'],now:'Teams take an idea through the Stage-Gate process, use AI to score ideas and draft a customer persona, and pitch a Canva mock-up.',
+    prompt:'Guide my team through the Stage-Gate new product development process for a product idea in {F}: [idea].\nFor each stage (idea, screening, concept, development, testing, launch) give the key question, the output, and a go/kill criterion.\nThen create one customer persona and a 5-question customer survey.',
+    ex:{title:'Stage-Gate in a 90-minute workshop',illus:true,html:()=>`<ul><li>0:00 Each team lists 10 ideas</li><li>0:15 AI scores ideas on need, cost and feasibility; the team makes the final choice</li><li>0:35 Concept and customer persona</li><li>0:55 Canva mock-up</li><li>1:15 Pitch and gate decision by a jury: go or kill</li></ul>`}}
+  ],
+  evid:['Workshop plan with agenda','Slides or handouts','Attendance and anonymised feedback summary','2-page report with photos']},
+
+ {id:'ai-decision-making',code:'A14',cat:'Micro Project',name:'AI in management decision-making',
+  orig:'Write case study on application of Artificial Intelligence in Management Decision-Making.',
+  now:'Study real uses of AI in management decisions, then make one small AI-assisted decision yourself with real data, check the AI’s numbers, and report it in the micro-project format.',
+  plat:['chatgpt','claude','gemini','sheets','perplexity'],
+  steps:['Literature: choose a domain such as demand forecasting, predictive maintenance, route optimisation, AI resume screening or energy load forecasting. Collect 3 real cases with sources.',
+   'Collect a small real dataset, for example 30 days of canteen sales, a lab machine breakdown log, or hostel electricity meter readings.',
+   'Upload the CSV to ChatGPT, Claude or Gemini and ask for patterns, a forecast and a recommended decision.',
+   'Check the AI’s numbers in Excel or Google Sheets with averages and a trend line. Note where it was right and wrong.',
+   'Make the final decision yourselves, and discuss the risks: bias, data privacy, and trusting the AI too much.',
+   'Write the report in the micro-project format shown below.'],
+  prompt:'Here are 30 days of [canteen sales / machine downtime / electricity] data as CSV.\n1. Describe the patterns: weekday effects, trend, outliers.\n2. Forecast the next 7 days with a simple method I can explain, and show the calculation.\n3. Recommend a management decision (for example, how much to prepare) and its expected effect.\n4. List the assumptions and risks of relying on this forecast.\n\n[paste CSV]',
+  ex:{title:'Canteen samosa demand forecast',illus:true,html:()=>`
+   <div class="tbl"><table><thead><tr><th>Day</th><th class="num">Avg sold (4 weeks)</th><th class="num">Old plan</th><th class="num">AI-assisted plan</th></tr></thead><tbody>
+   <tr><td>Monday</td><td class="num">176</td><td class="num">200</td><td class="num">185</td></tr>
+   <tr><td>Tue–Thu</td><td class="num">138</td><td class="num">200</td><td class="num">145</td></tr>
+   <tr><td>Friday</td><td class="num">171</td><td class="num">200</td><td class="num">180</td></tr>
+   <tr><td>Saturday</td><td class="num">94</td><td class="num">200</td><td class="num">100</td></tr>
+   </tbody></table></div>
+   <p>Result: average leftover fell from about 51 to about 9 samosas a day. A human check added one rule the AI missed: prepare 20% less during exam weeks.</p>
+   <h3 style="margin-top:6px">Report format (micro-project Part B)</h3>
+   <div class="tbl"><table><thead><tr><th>Section</th><th>What to write</th></tr></thead><tbody>
+   <tr><td>1. Rationale</td><td>Why AI in decision-making matters for ${'{F}'}</td></tr>
+   <tr><td>2. Aims and benefits</td><td>What the project set out to show</td></tr>
+   <tr><td>3. Course outcomes achieved</td><td>Map to the course outcomes in your syllabus</td></tr>
+   <tr><td>4. Literature review</td><td>The 3 real cases with sources</td></tr>
+   <tr><td>5. Actual methodology followed</td><td>Data collection, AI prompts, Excel check, decision</td></tr>
+   <tr><td>6. Actual resources used</td><td>AI tools, software, data source</td></tr>
+   <tr><td>7. Outputs</td><td>Forecast, decision, measured result</td></tr>
+   <tr><td>8. Skills developed</td><td>Data handling, prompting, critical checking</td></tr>
+   <tr><td>9. Applications</td><td>Where else this approach could be used</td></tr>
+   </tbody></table></div>`},
+  evid:['Part A proposal and Part B report','Dataset, AI transcript and Excel check','5-minute presentation','AI-use declaration']}
+];
+
+/* ---------- state ---------- */
+const KEY='mgmt-ai-lab-v1';
+let saved={}; try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){saved={};}
+const state={
+  branch: BR[saved.branch]?saved.branch:'CO',
+  act: ACT[0].id,
+  sub: saved.sub||{},
+  done: saved.done||{},
+  mx: Array.isArray(saved.mx)?saved.mx:SAMPLE_MX.slice(),
+  gantt: saved.gantt&&Array.isArray(saved.gantt.rows)?saved.gantt:null,
+  subs: saved.subs||{},
+  quiz:{}
+};
+if(!state.gantt) state.gantt={rows:BR[state.branch].gantt.map(r=>r.slice()),edited:false,branch:state.branch};
+function save(){try{localStorage.setItem(KEY,JSON.stringify({branch:state.branch,sub:state.sub,done:state.done,mx:state.mx,gantt:state.gantt,subs:state.subs}));}catch(e){}}
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function vals(){const b=BR[state.branch];return {B:b.name,F:b.field,ISO:b.iso[0],ISOA:b.iso[1],ORG:b.org,SCM:b.scm,SAFE:b.safe,PROJ:b.proj};}
+const TOK=/\{(B|F|ISO|ISOA|ORG|SCM|SAFE|PROJ)\}/g;
+function fillPlain(s){const v=vals();return s.replace(TOK,(m,k)=>v[k]);}
+function fillH(s){const v=vals();return s.replace(TOK,(m,k)=>esc(v[k]));}
+function promptHTML(s){const v=vals();let t=s.replace(TOK,(m,k)=>'\u0001'+v[k]+'\u0002');t=esc(t);
+  t=t.replace(/\u0001([^\u0002]*)\u0002/g,'<mark class="auto">$1</mark>').replace(/\[([^\]\n]+)\]/g,'<mark class="you">[$1]</mark>');return t;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1600);}
+function copyText(text,fallbackEl){
+  try{navigator.clipboard.writeText(text).then(()=>toast('Copied'),()=>selectEl(fallbackEl));}catch(e){selectEl(fallbackEl);}
+}
+function selectEl(el){if(!el)return;const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Selected. Press Ctrl+C to copy');}
+const CATS=[...new Set(ACT.map(a=>a.cat))];
+
+/* ---------- header, index ---------- */
+function renderBranch(){
+  const sel=document.getElementById('branch');
+  sel.innerHTML=Object.entries(BR).map(([k,b])=>`<option value="${k}">${esc(b.name)}</option>`).join('');
+  sel.value=state.branch;
+}
+function renderProgress(){
+  const n=ACT.filter(a=>state.done[a.id]).length;
+  document.getElementById('prog').textContent=`${n} of ${ACT.length} done`;
+  document.getElementById('progBar').style.width=(n/ACT.length*100)+'%';
+}
+function renderIndex(){
+  document.getElementById('index').innerHTML=CATS.map(c=>`<div class="grp"><div class="grp-h">${esc(c)}</div>${
+    ACT.filter(a=>a.cat===c).map(a=>`<button class="it${state.done[a.id]?' done':''}" data-go="${a.id}" aria-current="${a.id===state.act}"><span class="c">${a.code}</span><span>${esc(a.name)}</span><span class="ck" aria-label="${state.done[a.id]?'Done':'Not done'}"></span></button>`).join('')
+  }</div>`).join('');
+  const mp=document.getElementById('mobilePick');
+  mp.innerHTML=CATS.map(c=>`<optgroup label="${esc(c)}">${ACT.filter(a=>a.cat===c).map(a=>`<option value="${a.id}">${a.code} · ${esc(a.name)}${state.done[a.id]?' ✓':''}</option>`).join('')}</optgroup>`).join('');
+  mp.value=state.act;
+}
+
+/* ---------- detail ---------- */
+function current(){const a=ACT.find(x=>x.id===state.act)||ACT[0];const sub=a.subs?(a.subs.find(s=>s.id===state.sub[a.id])||a.subs[0]):null;return {a,sub};}
+function renderDetail(){
+  const {a,sub}=current(); const b=BR[state.branch]; const i=ACT.indexOf(a);
+  const ex=sub?sub.ex:a.ex; const prompt=sub?sub.prompt:a.prompt; const plat=(sub&&sub.plat)||a.plat;
+  const exHtml=typeof ex.html==='function'?ex.html(b):ex.html;
+  const prev=ACT[i-1], next=ACT[i+1];
+  document.getElementById('detail').innerHTML=`
+   <div><p class="eyebrow">${esc(a.cat)} · Activity ${a.code}</p><h2>${esc(a.name)}</h2></div>
+   <div class="compare">
+     <div class="was"><span class="lbl">Syllabus activity</span><p>${esc(a.orig)}</p></div>
+     <div class="now"><span class="lbl">AI-enhanced assignment${sub?' · '+esc(sub.name):''}</span><p>${fillH(sub?sub.now:a.now)}</p></div>
+   </div>
+   ${a.subs?`<div><span class="lbl">Choose a topic</span><div class="tabs" role="tablist">${a.subs.map(s=>`<button class="tab" role="tab" aria-selected="${s.id===sub.id}" data-sub="${s.id}">${esc(s.name)}</button>`).join('')}</div></div>`:''}
+   <div><span class="lbl">Suggested AI platforms</span><div class="chips">${plat.map(k=>`<a class="chip" href="${P[k][1]}" target="_blank" rel="noopener"><b>${esc(P[k][0])} ↗</b><span>${esc(P[k][2])}</span></a>`).join('')}</div></div>
+   <div class="two">
+     <section><h3>Steps</h3><ol class="steps">${a.steps.map(s=>`<li><span>${fillH(s)}</span></li>`).join('')}</ol></section>
+     <section class="pbox"><div class="pb-head"><h3>Starter prompt</h3><button class="btn small primary" data-act="copy-prompt">Copy prompt</button></div>
+       <pre class="prompt" id="promptText">${promptHTML(prompt)}</pre>
+       <p class="legend"><mark class="auto">Highlighted</mark> text comes from your branch. <mark class="you">[Bracketed]</mark> text is for you to fill in. Works in any chat assistant.</p></section>
+   </div>
+   <section class="example"><div class="ex-head"><h3>Worked example: ${fillH(ex.title)}</h3>${ex.illus?'<span class="tag">Illustrative</span>':''}</div><div class="ex-body">${fillH(exHtml)}</div></section>
+   ${a.tool?'<section class="tool" id="tool"></section>':''}
+   <div class="foot"><section><h3>Evidence to submit</h3><ul>${a.evid.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></section>
+     <button class="btn done-btn" data-act="toggle-done" aria-pressed="${!!state.done[a.id]}">${state.done[a.id]?'Done ✓':'Mark as done'}</button></div>
+   <section class="submit" id="submitBox" aria-label="Submit this activity"></section>
+   <nav class="pager" aria-label="Previous and next activity">
+     <button data-go="${prev?prev.id:''}" ${prev?'':'disabled'}>← ${prev?prev.code+' '+esc(prev.name):''}</button>
+     <button data-go="${next?next.id:''}" ${next?'':'disabled'}>${next?next.code+' '+esc(next.name):''} →</button>
+   </nav>`;
+  if(a.tool==='matrix') renderMatrix();
+  if(a.tool==='gantt') renderGantt();
+  if(a.tool==='eoq') renderEOQ();
+  if(a.tool==='quiz') renderQuiz();
+  renderSubmit();
+}
+
+/* ---------- submissions ---------- */
+const LIMIT_MB=10, MAX_FILES=3;
+const ACCEPT='.pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv';
+const TYPES={pdf:'application/pdf',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',txt:'text/plain',csv:'text/csv',
+  doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ppt:'application/vnd.ms-powerpoint',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
+const drafts={}, pending={}; let pinMem='';
+let profile={}; try{profile=JSON.parse(localStorage.getItem(KEY+'-profile')||'{}')||{};}catch(e){profile={};}
+function saveProfile(){try{localStorage.setItem(KEY+'-profile',JSON.stringify(profile));}catch(e){}}
+function apiUrl(){const c=window.LAB_CONFIG||{};return String(c.apiUrl||'').trim();}
+function subKey(){const {a,sub}=current();return a.id+(sub?':'+sub.id:'');}
+function fileType(n){return TYPES[(String(n).split('.').pop()||'').toLowerCase()]||'';}
+function fmtDate(s){if(!s)return '';const d=new Date(s);return isNaN(d)?String(s):d.toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function setMsg(el,kind,text){if(!el)return;el.className='msg '+kind;el.textContent=text;}
+async function post(body){
+  let r;
+  try{r=await fetch(apiUrl(),{method:'POST',body:JSON.stringify(body)});}
+  catch(e){return {ok:false,error:'Could not reach the submission server. Check your internet connection and try again.'};}
+  const t=await r.text();
+  try{return JSON.parse(t);}catch(e){return {ok:false,error:'The submission server gave an unexpected reply. Ask your teacher to check the web app link and that access is set to "Anyone".'};}
+}
+function readB64(file){return new Promise((res,rej)=>{const fr=new FileReader();
+  fr.onload=()=>res({name:file.name,type:fileType(file.name),data:String(fr.result).split(',')[1]||''});
+  fr.onerror=()=>rej(new Error('Could not read '+file.name+'.'));fr.readAsDataURL(file);});}
+
+function renderSubmit(){
+  const el=document.getElementById('submitBox'); if(!el)return;
+  const {a,sub}=current(); const key=subKey(); const last=state.subs[key];
+  const title=`Submit ${a.code}${sub?' · '+esc(sub.name):''}`;
+  if(!apiUrl()){el.innerHTML=`<h3 style="margin:0">${title}</h3><p class="note">Online submission is not switched on yet. Your teacher turns it on once by following SETUP-SUBMISSIONS.txt. Until then, hand in your work the way your teacher asks.</p>`;return;}
+  const d=drafts[key]||(drafts[key]={link1:'',link2:'',reflect:'',tools:[],decl:false});
+  const tools=((sub&&sub.plat)||a.plat).map(k=>P[k][0]).concat(['Other']);
+  const files=pending[key]||[];
+  el.innerHTML=`<div class="sub-head"><h3>${title}</h3>${last?`<span class="pill ok">Submitted ${esc(fmtDate(last.at))} · ID ${esc(last.id)}${last.version>1?' · version '+last.version:''}</span>`:''}</div>
+   <p class="legend" style="margin:0">Attach everything listed under "Evidence to submit". You can submit again later; your teacher sees every version.</p>
+   <form id="subForm" class="fgrid" novalidate>
+     <div class="f"><label for="sName">Full name</label><input type="text" id="sName" data-prof="name" autocomplete="name" value="${esc(profile.name||'')}"></div>
+     <div class="f"><label for="sEnroll">Enrollment number</label><input type="text" id="sEnroll" data-prof="enroll" autocomplete="off" value="${esc(profile.enroll||'')}"></div>
+     <div class="f"><label for="sClass">Class / division</label><input type="text" id="sClass" data-prof="cls" placeholder="e.g. CO5I-A" value="${esc(profile.cls||'')}"></div>
+     <div class="f"><label for="sPin">PIN (4 to 6 digits)</label><input type="password" id="sPin" inputmode="numeric" maxlength="6" autocomplete="off" value="${esc(pinMem)}"><small>Choose it on your first submission and use the same PIN every time. You need it to see your marks.</small></div>
+     <div class="f full"><label for="sLink1">Link to your work</label><input type="url" id="sLink1" data-draft="link1" placeholder="https://drive.google.com/..." value="${esc(d.link1)}"><small>Google Drive, YouTube or any web link. For Drive, set sharing to "Anyone with the link".</small></div>
+     <div class="f full"><label for="sLink2">Second link (optional)</label><input type="url" id="sLink2" data-draft="link2" placeholder="Prompt journal, video, slides" value="${esc(d.link2)}"></div>
+     <div class="f full"><span class="flabel">Files (optional)</span>
+       <div class="row"><button class="btn small" type="button" data-act="pick-files">Choose files</button><small style="margin:0">Up to ${MAX_FILES} files, ${LIMIT_MB} MB each: PDF, JPG, PNG, Word, PowerPoint, Excel or text</small></div>
+       <input type="file" id="sFiles" multiple accept="${ACCEPT}" hidden>
+       ${files.length?`<ul class="filelist">${files.map((f,i)=>`<li><span>${esc(f.name)} · ${(f.size/1048576).toFixed(1)} MB</span><button class="x" type="button" data-fdel="${i}" aria-label="Remove ${esc(f.name)}">×</button></li>`).join('')}</ul>`:''}</div>
+     <div class="f full"><span class="flabel">AI tools you used</span><div class="checks">${tools.map((n,i)=>`<label for="sTool${i}"><input type="checkbox" id="sTool${i}" data-tool="${esc(n)}" ${d.tools.includes(n)?'checked':''}> ${esc(n)}</label>`).join('')}</div></div>
+     <div class="f full"><label for="sReflect">Reflection</label><textarea id="sReflect" data-draft="reflect" placeholder="What did you do yourself? What did AI help with? Where was the AI wrong, and how did you check?">${esc(d.reflect)}</textarea></div>
+     <label class="decl-check full" for="sDecl"><input type="checkbox" id="sDecl" ${d.decl?'checked':''}><span>I declare that I used AI only as described above. The analysis, conclusions and final text are my own, and I checked the facts against reliable sources.</span></label>
+     <div class="full row"><button class="btn primary" type="submit" id="sBtn">Submit ${a.code}</button></div>
+     <p id="subMsg" class="full" role="status"></p>
+   </form>`;
+}
+
+async function doSubmit(){
+  const {a,sub}=current(); const key=subKey(); const d=drafts[key];
+  const msg=document.getElementById('subMsg'), btn=document.getElementById('sBtn');
+  const v=id=>document.getElementById(id).value.trim();
+  const name=v('sName'),en=v('sEnroll'),cls=v('sClass'),pin=v('sPin'),links=[v('sLink1'),v('sLink2')].filter(Boolean);
+  const files=pending[key]||[];
+  const err=!name?'Enter your full name.':!en?'Enter your enrollment number.':!cls?'Enter your class or division.'
+    :!/^\d{4,6}$/.test(pin)?'The PIN must be 4 to 6 digits.'
+    :links.some(l=>!/^https?:\/\/\S+$/i.test(l))?'Links must start with https:// (copy the full link from the address bar or Share button).'
+    :(!links.length&&!files.length)?'Add at least one link or one file.'
+    :d.reflect.trim().length<30?'Write at least 30 characters in the reflection.'
+    :!document.getElementById('sDecl').checked?'Tick the AI-use declaration before submitting.':'';
+  if(err){setMsg(msg,'err',err);return;}
+  btn.disabled=true; setMsg(msg,'info',files.length?'Uploading. This can take up to a minute on slow internet.':'Submitting…');
+  let data;
+  try{data=await Promise.all(files.map(readB64));}catch(e){btn.disabled=false;setMsg(msg,'err',e.message);return;}
+  const res=await post({action:'submit',name,enrollment:en,className:cls,pin,branch:BR[state.branch].name,code:a.code,activity:a.name,topic:sub?sub.name:'',links,tools:d.tools,reflection:d.reflect.trim(),declaration:true,files:data});
+  if(!res.ok){btn.disabled=false;setMsg(msg,'err',res.error||'Submission failed. Try again.');return;}
+  state.subs[key]={id:res.id,at:res.at,version:res.version}; state.done[a.id]=true; save();
+  delete drafts[key]; delete pending[key];
+  renderAll();
+  setMsg(document.getElementById('subMsg'),'ok',`Submitted. Your submission ID is ${res.id}. Use "Check my marks" at the top with your enrollment number and PIN to see your marks later.`);
+  toast('Submitted');
+}
+
+function addFiles(list){
+  const key=subKey(); const cur=pending[key]||(pending[key]=[]); const problems=[];
+  for(const f of list){
+    if(cur.length>=MAX_FILES){problems.push(`Only ${MAX_FILES} files are allowed.`);break;}
+    if(!fileType(f.name)){problems.push(`"${f.name}" is not an allowed file type.`);continue;}
+    if(f.size>LIMIT_MB*1048576){problems.push(`"${f.name}" is larger than ${LIMIT_MB} MB. Upload it to Google Drive and paste the link instead.`);continue;}
+    cur.push(f);
+  }
+  renderSubmit();
+  if(problems.length) setMsg(document.getElementById('subMsg'),'err',problems.join(' '));
+}
+
+async function checkMarks(){
+  const out=document.getElementById('marksOut');
+  const en=document.getElementById('mEnroll').value.trim(), pin=document.getElementById('mPin').value.trim();
+  if(!apiUrl()){out.innerHTML='<p class="note">Online submission is not switched on yet. Ask your teacher.</p>';return;}
+  if(!en||!/^\d{4,6}$/.test(pin)){out.innerHTML='<p class="msg err">Enter your enrollment number and your 4 to 6 digit PIN.</p>';return;}
+  out.innerHTML='<p class="msg info">Loading…</p>';
+  const res=await post({action:'mine',enrollment:en,pin});
+  if(!res.ok){out.innerHTML=`<p class="msg err">${esc(res.error||'Could not load your marks.')}</p>`;return;}
+  if(!res.items.length){out.innerHTML='<p class="msg info">No submissions yet.</p>';return;}
+  const marked=res.items.filter(x=>x.status==='Marked');
+  const pill=s=>s==='Marked'?'<span class="pill ok">Marked</span>':s==='Resubmit'?'<span class="pill warn">Please resubmit</span>':'<span class="pill">Waiting for marking</span>';
+  out.innerHTML=`<p><b>${esc(res.name||en)}</b> · ${res.items.length} submission${res.items.length>1?'s':''} · ${marked.length} marked</p>
+   <div class="tbl"><table><thead><tr><th>Activity</th><th>Submitted</th><th>Status</th><th class="num">Marks</th><th>Teacher feedback</th></tr></thead><tbody>
+   ${res.items.slice().reverse().map(x=>`<tr><td><b>${esc(x.code)}</b> ${esc(x.activity)}${x.topic?' · '+esc(x.topic):''}${x.version>1?` <small>(v${x.version})</small>`:''}</td><td>${esc(fmtDate(x.at))}</td><td>${pill(x.status)}</td><td class="num">${x.total!==''&&x.total!=null?`<b>${esc(x.total)}</b> / 10`:'–'}</td><td>${esc(x.feedback||'')}</td></tr>`).join('')}
+   </tbody></table></div>`;
+}
+
+/* ---------- tool: matrix ---------- */
+const QN={1:['Q1 · Do now','Urgent · Important'],2:['Q2 · Schedule','Not urgent · Important'],3:['Q3 · Delegate or batch','Urgent · Not important'],4:['Q4 · Drop','Not urgent · Not important']};
+function renderMatrix(){
+  const el=document.getElementById('tool');
+  el.innerHTML=`<div class="tool-head"><h3>Matrix builder</h3><p>Starts with a sample week. Clear it and add your own tasks. Your matrix is saved in this browser only.</p></div>
+   <form class="row" id="mxForm"><input type="text" id="mxTask" placeholder="Task, e.g. Finish drawing sheet 4 by Thursday" required aria-label="Task">
+     <select id="mxQ" aria-label="Quadrant">${[1,2,3,4].map(q=>`<option value="${q}">${QN[q][0]}</option>`).join('')}</select>
+     <button class="btn primary" type="submit">Add task</button></form>
+   <div class="mx" id="mxGrid"></div>
+   <div class="row"><button class="btn small" data-act="mx-copy">Copy as text</button><button class="btn small" data-act="mx-sample">Load sample</button><button class="btn small" data-act="mx-clear">Clear all</button></div>`;
+  drawMatrix();
+  document.getElementById('mxForm').addEventListener('submit',e=>{e.preventDefault();const t=document.getElementById('mxTask');const v=t.value.trim();if(!v)return;state.mx.push({t:v,q:+document.getElementById('mxQ').value});t.value='';save();drawMatrix();t.focus();});
+}
+function drawMatrix(){
+  document.getElementById('mxGrid').innerHTML=[1,2,3,4].map(q=>{const items=state.mx.map((m,i)=>({...m,i})).filter(m=>m.q===q);
+    return `<div class="q q${q}"><div class="q-h"><b>${QN[q][0]}</b><small>${QN[q][1]}</small></div>${items.length?`<ul>${items.map(m=>`<li><span>${esc(m.t)}</span><button class="x" data-mxdel="${m.i}" aria-label="Remove ${esc(m.t)}">×</button></li>`).join('')}</ul>`:'<p class="empty">No tasks yet</p>'}</div>`;}).join('');
+}
+function matrixText(){return [1,2,3,4].map(q=>`${QN[q][0]} (${QN[q][1]})\n`+(state.mx.filter(m=>m.q===q).map(m=>'- '+m.t).join('\n')||'- none')).join('\n\n');}
+
+/* ---------- tool: gantt ---------- */
+function renderGantt(){
+  const b=BR[state.branch];
+  if(!state.gantt.edited && state.gantt.branch!==state.branch){state.gantt={rows:b.gantt.map(r=>r.slice()),edited:false,branch:state.branch};save();}
+  const el=document.getElementById('tool');
+  el.innerHTML=`<div class="tool-head"><h3>Gantt chart builder</h3><p>Edit tasks, start week and duration. The chart updates as you type and is saved in this browser.</p></div>
+   <div class="gtable" id="gRows"></div>
+   <div class="row"><button class="btn small" data-act="g-add">Add task</button><button class="btn small" data-act="g-template">Load ${esc(b.name)} template</button><button class="btn small primary" data-act="g-mermaid">Copy Mermaid code</button></div>
+   <div class="gchart" id="gChart"></div>`;
+  drawGanttRows(); drawGanttChart();
+}
+function drawGanttRows(){
+  document.getElementById('gRows').innerHTML=`<div class="grow h"><span>Task</span><span>Start wk</span><span>Weeks</span><span></span></div>`+
+   state.gantt.rows.map((r,i)=>`<div class="grow"><input id="gn${i}" data-g="${i}" data-f="0" value="${esc(r[0])}" aria-label="Task ${i+1} name"><input id="gs${i}" type="number" min="1" max="52" data-g="${i}" data-f="1" value="${r[1]}" aria-label="Task ${i+1} start week"><input id="gd${i}" type="number" min="1" max="52" data-g="${i}" data-f="2" value="${r[2]}" aria-label="Task ${i+1} duration in weeks"><button class="x" data-gdel="${i}" aria-label="Remove task ${i+1}">×</button></div>`).join('');
+}
+function drawGanttChart(){
+  const rows=state.gantt.rows.filter(r=>r[0]&&r[1]>0&&r[2]>0);
+  const el=document.getElementById('gChart');
+  if(!rows.length){el.innerHTML='<p class="empty">Add a task to see the chart.</p>';return;}
+  const end=Math.max(...rows.map(r=>r[1]+r[2]-1)); const cw=38;
+  el.innerHTML=`<div class="gc" style="grid-template-columns:minmax(140px,220px) ${end*cw}px;--cw:${cw}px;min-width:${end*cw+160}px">
+    <div></div><div style="display:grid;grid-template-columns:repeat(${end},${cw}px)">${Array.from({length:end},(_,k)=>`<div class="wk">W${k+1}</div>`).join('')}</div>
+    ${rows.map(r=>{const crit=r[1]+r[2]-1===end;return `<div class="gl" title="${esc(r[0])}">${esc(r[0])}</div><div class="lane" style="grid-template-columns:repeat(${end},${cw}px)"><div class="bar${crit?' crit':''}" style="grid-column:${r[1]} / span ${r[2]}">${r[2]}w</div></div>`;}).join('')}
+  </div>`;
+}
+function mermaidCode(){
+  const d=new Date(); const add=((8-d.getDay())%7)||7; d.setDate(d.getDate()+add);
+  const fmt=x=>x.toISOString().slice(0,10);
+  const lines=state.gantt.rows.filter(r=>r[0]).map((r,i)=>{const s=new Date(d);s.setDate(s.getDate()+(r[1]-1)*7);return `    ${String(r[0]).replace(/[:#;]/g,' ')} :t${i+1}, ${fmt(s)}, ${r[2]*7}d`;});
+  return `gantt\n    title ${BR[state.branch].proj.replace(/[:#;]/g,' ')}\n    dateFormat YYYY-MM-DD\n    section Tasks\n${lines.join('\n')}`;
+}
+
+/* ---------- tool: EOQ ---------- */
+function renderEOQ(){
+  const el=document.getElementById('tool');
+  el.innerHTML=`<div class="tool-head"><h3>EOQ calculator</h3><p>Check your hand calculation. Change any value.</p></div>
+   <div class="eoq">
+     <div class="field"><label for="eD">Annual demand D (units)</label><input id="eD" type="number" min="1" value="12000"></div>
+     <div class="field"><label for="eS">Ordering cost S (₹ per order)</label><input id="eS" type="number" min="0" value="500"></div>
+     <div class="field"><label for="eH">Holding cost H (₹ per unit per year)</label><input id="eH" type="number" min="0.01" step="0.01" value="12"></div>
+   </div><div class="stats" id="eOut"></div>`;
+  drawEOQ();
+}
+function drawEOQ(){
+  const D=+document.getElementById('eD').value,S=+document.getElementById('eS').value,H=+document.getElementById('eH').value;
+  const out=document.getElementById('eOut');
+  if(!(D>0&&S>=0&&H>0)){out.innerHTML='<div class="stat"><div class="k">Enter positive values for D and H.</div></div>';return;}
+  const q=Math.sqrt(2*D*S/H), n=D/q, cyc=365/n, oc=n*S, hc=q/2*H;
+  const f=x=>x.toLocaleString('en-IN',{maximumFractionDigits:x<100?1:0});
+  out.innerHTML=[[f(q)+' units','Economic order quantity'],[f(n),'Orders per year'],[f(cyc)+' days','Time between orders'],['₹'+f(oc+hc),'Total ordering + holding cost']].map(s=>`<div class="stat"><div class="v">${s[0]}</div><div class="k">${s[1]}</div></div>`).join('');
+}
+
+/* ---------- tool: quiz ---------- */
+function renderQuiz(){
+  const el=document.getElementById('tool');
+  const answered=Object.keys(state.quiz).length, right=Object.entries(state.quiz).filter(([k,v])=>QUIZ[k].a===v).length;
+  el.innerHTML=`<div class="tool-head row" style="justify-content:space-between"><div><h3>Practice quiz</h3><p>${answered<QUIZ.length?`${answered} of ${QUIZ.length} answered`:'Finished. Questions you got wrong show your weak topics.'}</p></div><div class="row"><span class="score">${right} / ${QUIZ.length}</span><button class="btn small" data-act="quiz-reset">Retake</button></div></div>
+   <div class="quiz">${QUIZ.map((q,i)=>{const ans=state.quiz[i];const done=ans!==undefined;
+     return `<div class="qq"><p class="qt">${i+1}. ${esc(q.q)}</p><div class="opts">${q.o.map((o,j)=>`<button class="opt${done&&j===q.a?' right':''}${done&&j===ans&&j!==q.a?' wrong':''}" data-q="${i}" data-o="${j}" ${done?'disabled':''}>${esc(o)}</button>`).join('')}</div>${done?`<p class="expl"><b>${ans===q.a?'Correct.':'Not quite.'}</b> ${esc(q.e)}</p>`:''}</div>`;}).join('')}</div>`;
+}
+
+/* ---------- directory ---------- */
+function renderDir(){document.getElementById('dir').innerHTML=Object.values(P).map(p=>`<a href="${p[1]}" target="_blank" rel="noopener"><b>${esc(p[0])} ↗</b><span>${esc(p[2])}</span></a>`).join('');}
+
+/* ---------- routing & events ---------- */
+function go(id,scroll){if(!ACT.some(a=>a.id===id))return; if(location.hash!=='#'+id){location.hash=id;} else {state.act=id;renderAll();}
+  if(scroll){const d=document.getElementById('detail');const top=d.getBoundingClientRect().top;if(top<0||top>innerHeight*0.6)d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}}
+function fromHash(){const h=location.hash.slice(1);if(ACT.some(a=>a.id===h))state.act=h;}
+function renderAll(){renderIndex();renderDetail();renderProgress();}
+window.addEventListener('hashchange',()=>{fromHash();renderAll();});
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t)return;
+  if(t.dataset.go){go(t.dataset.go,true);return;}
+  if(t.dataset.sub){const {a}=current();state.sub[a.id]=t.dataset.sub;save();renderDetail();return;}
+  if(t.dataset.mxdel!==undefined){state.mx.splice(+t.dataset.mxdel,1);save();drawMatrix();return;}
+  if(t.dataset.gdel!==undefined){state.gantt.rows.splice(+t.dataset.gdel,1);state.gantt.edited=true;save();drawGanttRows();drawGanttChart();return;}
+  if(t.dataset.q!==undefined){state.quiz[+t.dataset.q]=+t.dataset.o;renderQuiz();return;}
+  if(t.dataset.fdel!==undefined){const k=subKey();(pending[k]||[]).splice(+t.dataset.fdel,1);renderSubmit();return;}
+  const act=t.dataset.act; if(!act)return;
+  const {a,sub}=current();
+  if(act==='copy-prompt'){copyText(fillPlain(sub?sub.prompt:a.prompt),document.getElementById('promptText'));}
+  else if(act==='copy-decl'){copyText(document.getElementById('decl').textContent,document.getElementById('decl'));}
+  else if(act==='toggle-done'){state.done[a.id]=!state.done[a.id];if(!state.done[a.id])delete state.done[a.id];save();renderAll();toast(state.done[a.id]?'Marked as done':'Marked as not done');}
+  else if(act==='mx-copy'){copyText(matrixText(),document.getElementById('mxGrid'));}
+  else if(act==='mx-sample'){state.mx=SAMPLE_MX.slice();save();drawMatrix();}
+  else if(act==='mx-clear'){state.mx=[];save();drawMatrix();toast('Matrix cleared');}
+  else if(act==='g-add'){state.gantt.rows.push(['New task',1,1]);state.gantt.edited=true;save();drawGanttRows();drawGanttChart();}
+  else if(act==='g-template'){state.gantt={rows:BR[state.branch].gantt.map(r=>r.slice()),edited:false,branch:state.branch};save();drawGanttRows();drawGanttChart();toast('Template loaded');}
+  else if(act==='g-mermaid'){copyText(mermaidCode(),document.getElementById('gChart'));}
+  else if(act==='quiz-reset'){state.quiz={};renderQuiz();}
+  else if(act==='pick-files'){document.getElementById('sFiles').click();}
+  else if(act==='open-marks'){const dl=document.getElementById('marksDlg');const me=document.getElementById('mEnroll');if(!me.value)me.value=profile.enroll||'';
+    if(dl.showModal){dl.showModal();}else{dl.setAttribute('open','');} (me.value?document.getElementById('mPin'):me).focus();}
+  else if(act==='close-marks'){const dl=document.getElementById('marksDlg');if(dl.close)dl.close();else dl.removeAttribute('open');}
+});
+document.addEventListener('submit',e=>{
+  if(e.target.id==='subForm'){e.preventDefault();doSubmit();}
+  else if(e.target.id==='marksForm'){e.preventDefault();checkMarks();}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='sFiles'){addFiles(Array.from(t.files||[]));t.value='';}
+  else if(t.dataset.tool!==undefined){const d=drafts[subKey()];if(!d)return;const n=t.dataset.tool;d.tools=d.tools.filter(x=>x!==n);if(t.checked)d.tools.push(n);}
+  else if(t.id==='sDecl'){const d=drafts[subKey()];if(d)d.decl=t.checked;}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.g!==undefined){const i=+t.dataset.g,f=+t.dataset.f;state.gantt.rows[i][f]=f?Math.max(0,Math.min(52,parseInt(t.value,10)||0)):t.value;state.gantt.edited=true;save();drawGanttChart();}
+  if(t.id==='eD'||t.id==='eS'||t.id==='eH')drawEOQ();
+  if(t.dataset.prof){profile[t.dataset.prof]=t.value.trim();saveProfile();}
+  if(t.dataset.draft){const d=drafts[subKey()];if(d)d[t.dataset.draft]=t.value;}
+  if(t.id==='sPin')pinMem=t.value;
+});
+document.getElementById('branch').addEventListener('change',e=>{state.branch=e.target.value;save();renderDetail();toast('Examples switched to '+BR[state.branch].name);});
+document.getElementById('mobilePick').addEventListener('change',e=>go(e.target.value,false));
+
+fromHash(); renderBranch(); renderDir(); renderAll();
+</script>
+</body>
+</html>
