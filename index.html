@@ -912,7 +912,7 @@ async function doSubmit(){
   state.subs[key]={id:res.id,at:res.at,version:res.version}; state.done[a.id]=true; save();
   delete drafts[key]; delete pending[key];
   renderAll();
-  setMsg(document.getElementById('subMsg'),'ok',`Submitted. Your submission ID is ${res.id}. Use "Check my marks" at the top with your enrollment number and PIN to see your marks later.`);
+  setMsg(document.getElementById('subMsg'),'ok',`Submitted${res.listed&&res.name?` as ${res.name}${res.className?', '+res.className:''} (from the class list)`:''}. Your submission ID is ${res.id}. Use "Check my marks" at the top with your enrollment number and PIN to see your marks later.`);
   toast('Submitted');
 }
 
