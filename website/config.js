@@ -5,5 +5,6 @@
 // Full steps: SETUP-SUBMISSIONS.txt
 
 window.LAB_CONFIG = {
-  apiUrl: "https://script.google.com/macros/s/AKfycbx60MWv251kbGSzks3yQvil7TTNczFq9BpJti6C_W2zCj43jbVSPetRb8httVAdivb8/exec"
+    apiUrl: "https://script.google.com/macros/s/AKfycbx60MWv251kbGSzks3yQvil7TTNczFq9BpJti6C_W2zCj43jbVSPetRb8httVAdivb8/exec"
+
 };
