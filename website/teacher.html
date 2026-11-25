@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Management AI Lab Marking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: same graph-sheet identity as the student app; a dense marking table with a dialog for each submission */
+:root{
+  --paper:#F1F3EE; --sheet:#FFFFFF; --ink:#18222F; --ink-2:#4B5767; --line:#D3D8CD; --grid:rgba(24,34,47,.055);
+  --saffron:#B85512; --saffron-soft:#F7E4D3; --teal:#14675F; --teal-soft:#DCEDE9; --on-accent:#FFFFFF;
+  --ok:#23774A; --ok-soft:#DDF0E4; --bad:#A8281F; --bad-soft:#F8DEDB;
+  --f-display:'Archivo','Arial Narrow',Arial,sans-serif;
+  --f-body:'Source Sans 3','Segoe UI',Roboto,Arial,sans-serif;
+  --f-mono:'JetBrains Mono',Consolas,'Courier New',monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151A; --sheet:#171F26; --ink:#E4E8EB; --ink-2:#9AA6B1; --line:#2A3541; --grid:rgba(228,232,235,.035);
+  --saffron:#F0893C; --saffron-soft:#3A2516; --teal:#56B9AB; --teal-soft:#15302C; --on-accent:#10151A;
+  --ok:#62C98F; --ok-soft:#173324; --bad:#F08C83; --bad-soft:#3A1C1A; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#10151A; --sheet:#171F26; --ink:#E4E8EB; --ink-2:#9AA6B1; --line:#2A3541; --grid:rgba(228,232,235,.035);
+  --saffron:#F0893C; --saffron-soft:#3A2516; --teal:#56B9AB; --teal-soft:#15302C; --on-accent:#10151A;
+  --ok:#62C98F; --ok-soft:#173324; --bad:#F08C83; --bad-soft:#3A1C1A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+[hidden]{display:none!important}
+.page{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 56px}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.1;text-wrap:balance}
+p{margin:0}
+a{color:var(--teal)}
+:focus-visible{outline:2.5px solid var(--saffron);outline-offset:2px}
+.lbl{display:block;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin-bottom:5px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:14px;margin-bottom:22px;border-bottom:2px solid var(--ink);padding-bottom:14px}
+h1{font-size:clamp(1.9rem,4.5vw,3rem);font-weight:850;font-stretch:72%;text-transform:uppercase;letter-spacing:.005em}
+h1 em{font-style:normal;color:var(--saffron)}
+.top .who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem;color:var(--ink-2)}
+.btn{font:600 .88rem var(--f-body);padding:7px 14px;border-radius:4px;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--paper)}
+.btn.primary{background:var(--saffron);border-color:var(--saffron);color:var(--on-accent)}
+.btn.small{padding:4px 10px;font-size:.8rem}
+.btn[disabled]{opacity:.55;cursor:wait}
+input,select,textarea{font:1rem var(--f-body);padding:7px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink);min-width:0}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:22px clamp(16px,3vw,28px)}
+.login{max-width:440px;margin:40px auto;display:grid;gap:14px}
+.login label{font-weight:600;font-size:.9rem;display:block;margin-bottom:4px}
+.login input{width:100%}
+.msg{display:block;font-size:.92rem;padding:8px 12px;border-radius:4px}
+.msg.ok{background:var(--ok-soft)} .msg.err{background:var(--bad-soft)} .msg.info{background:var(--paper)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5px;background:var(--ink);border:2px solid var(--ink);margin-bottom:18px}
+.stat{background:var(--sheet);padding:10px 14px}
+.stat .v{font-family:var(--f-display);font-weight:800;font-size:1.7rem;font-stretch:85%;font-variant-numeric:tabular-nums}
+.stat .k{font-size:.82rem;color:var(--ink-2)}
+.stat.hot .v{color:var(--saffron)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px}
+.filters .fld{display:grid;gap:3px;min-width:0}
+.filters .fld span{font-family:var(--f-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2)}
+.filters .grow{flex:1 1 200px}
+.filters .grow input{width:100%}
+.chk{display:flex;gap:6px;align-items:center;font-size:.9rem;padding-bottom:8px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:5px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);background:var(--paper);white-space:nowrap;position:sticky;top:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--paper)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td small{color:var(--ink-2)}
+.pill{display:inline-block;font-size:.76rem;font-weight:600;padding:2px 9px;border-radius:999px;border:1px solid var(--line);background:var(--paper);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);border-color:var(--ok)} .pill.warn{background:var(--saffron-soft);border-color:var(--saffron)} .pill.new{background:var(--teal-soft);border-color:var(--teal)}
+.empty{padding:28px;text-align:center;color:var(--ink-2)}
+dialog{border:1.5px solid var(--ink);border-radius:6px;background:var(--sheet);color:var(--ink);padding:0;width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(10,15,20,.55)}
+.dlg{padding:20px clamp(16px,3vw,28px);display:grid;gap:16px}
+.dlg-head{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.dlg-head h2{font-size:1.5rem;font-stretch:85%;font-weight:800}
+.meta{color:var(--ink-2);font-size:.9rem;margin-top:4px}
+.ev{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.box{background:var(--paper);border-radius:5px;padding:12px 14px;min-width:0}
+.box ul{margin:0;padding-left:18px;display:grid;gap:4px;word-break:break-all}
+.box blockquote{margin:0;white-space:pre-wrap;font-size:.95rem}
+.rub{display:grid;gap:8px}
+.rrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px}
+.rrow b{display:block}
+.rrow small{color:var(--ink-2)}
+.lv{display:flex;gap:4px}
+.lv input{position:absolute;opacity:0;pointer-events:none}
+.lv label{width:38px;height:34px;display:grid;place-items:center;border:1.5px solid var(--line);border-radius:4px;font-family:var(--f-mono);font-weight:600;cursor:pointer;background:var(--sheet)}
+.lv input:checked + label{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lv input:focus-visible + label{outline:2.5px solid var(--saffron);outline-offset:2px}
+.total{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-display);font-weight:800;font-size:1.3rem;font-stretch:88%}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.quick button{font:.8rem var(--f-body);padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+textarea{width:100%;min-height:90px;resize:vertical}
+.dlg-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+.dlg-foot .row{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:700px){.ev{grid-template-columns:minmax(0,1fr)}.rrow{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div><span class="lbl">Management AI Lab</span><h1>Marking <em>desk</em></h1></div>
+    <div class="who" id="who" hidden><span id="whoName"></span><button class="btn small" id="refreshBtn">Refresh</button><button class="btn small" id="logoutBtn">Log out</button></div>
+  </header>
+
+  <section id="loginView" class="card login" aria-labelledby="loginH">
+    <h2 id="loginH" style="font-size:1.4rem">Teacher login</h2>
+    <p style="color:var(--ink-2)">Use the teacher password from the Settings sheet of your submissions Google Sheet.</p>
+    <form id="loginForm" style="display:grid;gap:12px" novalidate>
+      <div><label for="tName">Your name (shown with your marks)</label><input id="tName" type="text" autocomplete="name"></div>
+      <div><label for="tPass">Teacher password</label><input id="tPass" type="password" autocomplete="current-password"></div>
+      <button class="btn primary" type="submit" id="loginBtn">Open marking desk</button>
+      <p id="loginMsg" role="status"></p>
+    </form>
+  </section>
+
+  <section id="appView" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="filters">
+      <label class="fld"><span>Activity</span><select id="fCode"></select></label>
+      <label class="fld"><span>Class</span><select id="fClass"></select></label>
+      <label class="fld"><span>Branch</span><select id="fBranch"></select></label>
+      <label class="fld"><span>Status</span><select id="fStatus"><option value="">All</option><option value="Submitted">Waiting to mark</option><option value="Marked">Marked</option><option value="Resubmit">Sent back</option></select></label>
+      <label class="fld grow"><span>Search</span><input id="fQ" type="search" placeholder="Name or enrollment number"></label>
+      <label class="chk"><input type="checkbox" id="fLatest" checked> Latest version only</label>
+    </div>
+    <div class="actions">
+      <button class="btn small primary" id="nextBtn">Mark next waiting</button>
+      <button class="btn small" id="expList">Download shown list (CSV)</button>
+      <button class="btn small" id="expSheet">Download mark sheet (CSV)</button>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Submitted</th><th>Student</th><th>Class</th><th>Activity</th><th class="num">Ver</th><th>Status</th><th class="num">Marks</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<dialog id="markDlg" aria-labelledby="mH">
+  <form class="dlg" id="markForm" novalidate>
+    <div class="dlg-head">
+      <div><h2 id="mH"></h2><p class="meta" id="mMeta"></p></div>
+      <button class="btn small" type="button" id="mClose">Close</button>
+    </div>
+    <div class="ev">
+      <div class="box"><span class="lbl">Work submitted</span><ul id="mLinks"></ul></div>
+      <div class="box"><span class="lbl">AI tools used and declaration</span><p id="mTools"></p></div>
+      <div class="box" style="grid-column:1/-1"><span class="lbl">Student reflection</span><blockquote id="mReflect"></blockquote></div>
+    </div>
+    <div><span class="lbl">Rubric</span><div class="rub" id="mRubric"></div></div>
+    <div class="total"><span>Total</span><span id="mTotal">0 / 10</span></div>
+    <div>
+      <label class="lbl" for="mFeedback">Feedback to the student</label>
+      <div class="quick" id="mQuick" style="margin-bottom:8px"></div>
+      <textarea id="mFeedback" placeholder="What was good, and what to improve"></textarea>
+    </div>
+    <p id="mMsg" role="status"></p>
+    <div class="dlg-foot">
+      <button class="btn" type="button" id="mResubmit">Send back for resubmission</button>
+      <div class="row"><button class="btn" type="submit" id="mSave">Save marks</button><button class="btn primary" type="button" id="mSaveNext">Save and mark next</button></div>
+    </div>
+  </form>
+</dialog>
+
+<script src="config.js"></script>
+<script>
+const ACTS=[['A1','One-page book note'],['A2','Inventory management article'],['A3','ISO standards report'],['A4','Time management matrix'],['A5','Supply chain software report'],['A6','Gantt chart for a project'],['A7','TEDx talk keyword notes'],['A8','Case studies on five topics'],['A9','Recruitment and selection study'],['A10','Management lessons from Shivaji Maharaj'],['A11','Outbound training video'],['A12','Management quizzes'],['A13','Skill workshops for students'],['A14','AI in management decision-making']];
+const RUBRIC=[['Concept understanding',3,'Correct use of management concepts and terms from the unit'],['Own work before AI',2,'Handwritten notes, first draft, observations or data collected by the student'],['Use of AI',2,'Clear prompts, sensible follow-up questions, complete prompt journal'],['Verification and sources',2,'AI output checked; references listed with dates'],['Presentation and reflection',1,'Neat output and an honest note on where AI helped and where it was wrong']];
+const QUICK=['Good original work.','Prompt journal is missing.','Check facts and add sources with dates.','Reflection is too short.','Show your own notes or draft before using AI.','The Drive link is not shared. Set sharing to "Anyone with the link".'];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const S={pw:ss.get('mal-teacher-pw')||'',name:ls.get('mal-teacher-name')||'',items:[],view:[],cur:null};
+
+function apiUrl(){const c=window.LAB_CONFIG||{};return String(c.apiUrl||'').trim();}
+async function post(body){
+  let r;try{r=await fetch(apiUrl(),{method:'POST',body:JSON.stringify(body)});}
+  catch(e){return {ok:false,error:'Could not reach the submission server. Check your internet connection.'};}
+  const t=await r.text();try{return JSON.parse(t);}catch(e){return {ok:false,error:'Unexpected reply from the server. Check the web app URL in config.js and that access is set to "Anyone".'};}
+}
+function msg(el,kind,text){el.className='msg '+kind;el.textContent=text;}
+function fmt(s){if(!s)return '';const d=new Date(s);return isNaN(d)?String(s):d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function safeUrl(u){return /^https?:\/\//i.test(String(u))?String(u):'';}
+const actName=c=>(ACTS.find(a=>a[0]===c)||[c,''])[1];
+const statusPill=s=>s==='Marked'?'<span class="pill ok">Marked</span>':s==='Resubmit'?'<span class="pill warn">Sent back</span>':'<span class="pill new">Waiting</span>';
+
+/* ---------- login ---------- */
+$('tName').value=S.name;
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const m=$('loginMsg');
+  if(!apiUrl()){msg(m,'err','The submission server is not set up yet. Paste the web app URL into config.js (see SETUP-SUBMISSIONS.txt).');return;}
+  const name=$('tName').value.trim(),pw=$('tPass').value;
+  if(!name||!pw){msg(m,'err','Enter your name and the teacher password.');return;}
+  $('loginBtn').disabled=true;msg(m,'info','Checking…');
+  const res=await post({action:'login',password:pw});
+  $('loginBtn').disabled=false;
+  if(!res.ok){msg(m,'err',res.error||'Login failed.');return;}
+  S.pw=pw;S.name=name;ss.set('mal-teacher-pw',pw);ls.set('mal-teacher-name',name);$('tPass').value='';m.textContent='';m.className='';
+  enter();
+});
+$('logoutBtn').addEventListener('click',()=>{S.pw='';ss.del('mal-teacher-pw');S.items=[];$('appView').hidden=true;$('who').hidden=true;$('loginView').hidden=false;});
+$('refreshBtn').addEventListener('click',load);
+
+async function enter(){$('loginView').hidden=true;$('appView').hidden=false;$('who').hidden=false;$('whoName').textContent='Marking as '+S.name;await load();}
+async function load(){
+  $('rows').innerHTML='<tr><td colspan="7" class="empty">Loading submissions…</td></tr>';
+  const res=await post({action:'list',password:S.pw});
+  if(!res.ok){
+    if(/password/i.test(res.error||'')){$('logoutBtn').click();msg($('loginMsg'),'err',res.error);return;}
+    $('rows').innerHTML=`<tr><td colspan="7" class="empty">${esc(res.error||'Could not load submissions.')}</td></tr>`;return;
+  }
+  S.items=res.items;fillFilters();render();
+}
+
+/* ---------- filters & table ---------- */
+function fillFilters(){
+  const keep=id=>$(id).value;
+  const opts=(id,first,vals)=>{const v=keep(id);$(id).innerHTML=`<option value="">${first}</option>`+vals.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join('');$(id).value=vals.some(x=>x[0]===v)?v:'';};
+  opts('fCode','All activities',ACTS.map(a=>[a[0],a[0]+' · '+a[1]]));
+  const uniq=k=>[...new Set(S.items.map(x=>String(x[k]||'')).filter(Boolean))].sort();
+  opts('fClass','All classes',uniq('className').map(x=>[x,x]));
+  opts('fBranch','All branches',uniq('branch').map(x=>[x,x]));
+}
+['fCode','fClass','fBranch','fStatus','fLatest'].forEach(id=>$(id).addEventListener('change',render));
+$('fQ').addEventListener('input',render);
+
+function latestOnly(items){
+  const best={};items.forEach(x=>{const k=x.enrollment+'|'+x.code+'|'+x.topic;if(!best[k]||Number(x.version)>Number(best[k].version))best[k]=x;});
+  return items.filter(x=>best[x.enrollment+'|'+x.code+'|'+x.topic]===x);
+}
+function filtered(){
+  const code=$('fCode').value,cls=$('fClass').value,br=$('fBranch').value,st=$('fStatus').value,q=$('fQ').value.trim().toLowerCase();
+  let v=$('fLatest').checked?latestOnly(S.items):S.items.slice();
+  v=v.filter(x=>(!code||x.code===code)&&(!cls||x.className===cls)&&(!br||x.branch===br)&&(!st||x.status===st)&&(!q||(String(x.name)+' '+x.enrollment).toLowerCase().includes(q)));
+  return v.sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+}
+function render(){
+  S.view=filtered();
+  const latest=latestOnly(S.items);
+  const waiting=latest.filter(x=>x.status==='Submitted').length;
+  const stats=[[S.items.length,'Submissions (all versions)'],[waiting,'Waiting to mark',waiting>0],[latest.filter(x=>x.status==='Marked').length,'Marked'],[latest.filter(x=>x.status==='Resubmit').length,'Sent back'],[new Set(S.items.map(x=>x.enrollment)).size,'Students']];
+  $('stats').innerHTML=stats.map(s=>`<div class="stat${s[2]?' hot':''}"><div class="v">${s[0]}</div><div class="k">${s[1]}</div></div>`).join('');
+  $('rows').innerHTML=S.view.length?S.view.map(x=>`<tr data-id="${esc(x.id)}" tabindex="0"><td>${esc(fmt(x.at))}</td><td><b>${esc(x.name)}</b><br><small>${esc(x.enrollment)}</small></td><td>${esc(x.className)}<br><small>${esc(x.branch)}</small></td><td><b>${esc(x.code)}</b> ${esc(x.activity||actName(x.code))}${x.topic?`<br><small>${esc(x.topic)}</small>`:''}</td><td class="num">${esc(x.version)}</td><td>${statusPill(x.status)}</td><td class="num">${x.status!=='Submitted'&&x.total!==''?`<b>${esc(x.total)}</b> / 10`:'–'}</td></tr>`).join('')
+    :`<tr><td colspan="7" class="empty">${S.items.length?'No submissions match these filters.':'No submissions yet. They will appear here once students submit.'}</td></tr>`;
+}
+$('rows').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(tr)openMark(tr.dataset.id);});
+$('rows').addEventListener('keydown',e=>{if(e.key==='Enter'){const tr=e.target.closest('tr[data-id]');if(tr)openMark(tr.dataset.id);}});
+$('nextBtn').addEventListener('click',()=>{const n=S.view.find(x=>x.status==='Submitted');if(n)openMark(n.id);else alertMsg('Nothing is waiting to be marked in this list.');});
+function alertMsg(t){const r=$('rows');const old=r.innerHTML;r.insertAdjacentHTML('afterbegin',`<tr><td colspan="7"><span class="msg info">${esc(t)}</span></td></tr>`);setTimeout(()=>{if(r.firstElementChild&&r.firstElementChild.querySelector('.msg'))r.firstElementChild.remove();},2500);}
+
+/* ---------- marking dialog ---------- */
+function openMark(id){
+  const x=S.items.find(i=>i.id===id);if(!x)return;S.cur=x;
+  $('mH').textContent=`${x.name} · ${x.code} ${x.activity||actName(x.code)}`;
+  $('mMeta').textContent=`${x.enrollment} · ${x.className} · ${x.branch}${x.topic?' · Topic: '+x.topic:''} · Version ${x.version} · Submitted ${fmt(x.at)}${x.markedBy?' · Last marked by '+x.markedBy:''}`;
+  const links=(x.links||[]).map(u=>safeUrl(u)).filter(Boolean).map((u,i)=>`<li><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Link ${i+1}</a> <small>${esc(u)}</small></li>`);
+  const files=(x.files||[]).map(u=>safeUrl(u)).filter(Boolean).map((u,i)=>`<li><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Uploaded file ${i+1}</a> <small>(opens in your Google Drive)</small></li>`);
+  $('mLinks').innerHTML=links.concat(files).join('')||'<li>No links or files</li>';
+  $('mTools').innerHTML=`${esc(x.tools||'None listed')}<br><b>AI declaration:</b> ${esc(x.declaration||'No')}`;
+  $('mReflect').textContent=x.reflection||'';
+  $('mRubric').innerHTML=RUBRIC.map((r,i)=>`<div class="rrow"><div><b>${esc(r[0])}</b><small>${esc(r[2])}</small></div><div class="lv" role="radiogroup" aria-label="${esc(r[0])}, out of ${r[1]}">${Array.from({length:r[1]+1},(_,v)=>`<input type="radio" name="c${i}" id="c${i}v${v}" value="${v}" ${x.status!=='Submitted'&&Number(x.scores&&x.scores[i])===v&&x.scores[i]!==''?'checked':''}><label for="c${i}v${v}">${v}</label>`).join('')}</div></div>`).join('');
+  $('mQuick').innerHTML=QUICK.map(q=>`<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+  $('mFeedback').value=x.feedback||'';
+  $('mMsg').textContent='';$('mMsg').className='';
+  updateTotal();
+  const d=$('markDlg');if(!d.open){d.showModal?d.showModal():d.setAttribute('open','');}
+  $('mRubric').querySelector('input').focus();
+}
+function scores(){return RUBRIC.map((r,i)=>{const c=document.querySelector(`input[name="c${i}"]:checked`);return c?Number(c.value):null;});}
+function updateTotal(){const s=scores();$('mTotal').textContent=`${s.reduce((a,b)=>a+(b||0),0)} / 10`;}
+$('mRubric').addEventListener('change',updateTotal);
+$('mQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const f=$('mFeedback');f.value=(f.value.trim()?f.value.trim()+' ':'')+b.dataset.q;});
+$('mClose').addEventListener('click',()=>{const d=$('markDlg');d.close?d.close():d.removeAttribute('open');});
+
+async function saveMark(status,goNext){
+  const x=S.cur;if(!x)return;const m=$('mMsg');const s=scores();
+  if(status==='Marked'&&s.some(v=>v===null)){msg(m,'err','Choose a score for every rubric row.');return;}
+  if(status==='Resubmit'&&!$('mFeedback').value.trim()){msg(m,'err','Write feedback so the student knows what to fix.');return;}
+  const sc=s.map(v=>v||0);
+  ['mSave','mSaveNext','mResubmit'].forEach(id=>$(id).disabled=true);msg(m,'info','Saving…');
+  const res=await post({action:'grade',password:S.pw,teacher:S.name,id:x.id,status,scores:sc,feedback:$('mFeedback').value.trim()});
+  ['mSave','mSaveNext','mResubmit'].forEach(id=>$(id).disabled=false);
+  if(!res.ok){msg(m,'err',res.error||'Could not save.');return;}
+  Object.assign(x,{status:res.status,scores:sc,total:res.total,feedback:$('mFeedback').value.trim(),markedBy:S.name,markedAt:res.markedAt});
+  render();
+  if(goNext){const n=S.view.find(i=>i.status==='Submitted'&&i.id!==x.id);if(n){openMark(n.id);msg($('mMsg'),'ok',`Saved ${x.name}: ${res.total} / 10. This is the next one waiting.`);return;}
+    msg(m,'ok',`Saved: ${res.total} / 10. Nothing else is waiting in this list.`);return;}
+  msg(m,'ok',status==='Resubmit'?'Sent back. The student sees your feedback under "Check my marks".':`Saved: ${res.total} / 10.`);
+}
+$('markForm').addEventListener('submit',e=>{e.preventDefault();saveMark('Marked',false);});
+$('mSaveNext').addEventListener('click',()=>saveMark('Marked',true));
+$('mResubmit').addEventListener('click',()=>saveMark('Resubmit',false));
+
+/* ---------- exports ---------- */
+function csvCell(v){let s=String(v==null?'':v);if(/^[=+\-@]/.test(s))s="'"+s;return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function download(name,rows){
+  const csv='﻿'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+const stamp=()=>new Date().toISOString().slice(0,10);
+$('expList').addEventListener('click',()=>{
+  const head=['ID','Submitted at','Enrollment no','Name','Class','Branch','Activity code','Activity','Topic','Version','Status'].concat(RUBRIC.map(r=>`${r[0]} (${r[1]})`),['Total (10)','Feedback','Marked by','Marked at','Links','Files']);
+  download(`submissions-${stamp()}.csv`,[head].concat(S.view.map(x=>[x.id,fmt(x.at),x.enrollment,x.name,x.className,x.branch,x.code,x.activity,x.topic,x.version,x.status].concat(x.status==='Submitted'?RUBRIC.map(()=>''):x.scores,[x.status==='Submitted'?'':x.total,x.feedback,x.markedBy,fmt(x.markedAt),(x.links||[]).join(' '),(x.files||[]).join(' ')]))));
+});
+$('expSheet').addEventListener('click',()=>{
+  const cls=$('fClass').value,br=$('fBranch').value;
+  const items=S.items.filter(x=>(!cls||x.className===cls)&&(!br||x.branch===br));
+  const st={};
+  items.forEach(x=>{const s=st[x.enrollment]||(st[x.enrollment]={name:x.name,cls:x.className,br:x.branch,m:{}});
+    if(x.status!=='Marked')return;const p=s.m[x.code];if(!p||String(x.markedAt)>String(p.markedAt))s.m[x.code]=x;});
+  const head=['Enrollment no','Name','Class','Branch'].concat(ACTS.map(a=>a[0]),['Activities marked','Total','Average (out of 10)']);
+  const rows=Object.keys(st).sort().map(en=>{const s=st[en];const marks=ACTS.map(a=>s.m[a[0]]?Number(s.m[a[0]].total):'');const got=marks.filter(v=>v!=='');const tot=got.reduce((a,b)=>a+b,0);
+    return [en,s.name,s.cls,s.br].concat(marks,[got.length,tot,got.length?(tot/got.length).toFixed(1):'']);});
+  download(`mark-sheet${cls?'-'+cls:''}-${stamp()}.csv`,[head].concat(rows));
+});
+
+/* ---------- start ---------- */
+if(!apiUrl()){msg($('loginMsg'),'info','The submission server is not set up yet. Follow SETUP-SUBMISSIONS.txt, then paste the web app URL into config.js.');}
+else if(S.pw&&S.name){enter();}
+</script>
+</body>
+</html>
